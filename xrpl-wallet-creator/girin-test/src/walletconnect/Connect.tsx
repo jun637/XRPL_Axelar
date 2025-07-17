@@ -31,7 +31,16 @@ export function Connect() {
       const result = await res.text()
       console.log('📡 서버 응답:', result)
     } catch (err) {
-      console.error('❌ 서버 전송 실패:', err)
+      if (
+        typeof err === 'object' &&
+        err !== null &&
+        'message' in err &&
+        typeof (err as { message: unknown }).message === 'string'
+      ) {
+        console.error('❌ 서버 전송 실패:', (err as { message: string }).message)
+      } else {
+        console.error('❌ 서버 전송 실패:', err)
+      }
     }
   }
 
@@ -53,25 +62,36 @@ export function Connect() {
         console.warn('❗ 연결된 XRPL 계정 없음')
       }
     } catch (err) {
-      console.error('❌ Wallet 연결 실패:', err)
+      if (
+        typeof err === 'object' &&
+        err !== null &&
+        'message' in err &&
+        typeof (err as { message: unknown }).message === 'string'
+      ) {
+        console.error('❌ Wallet 연결 실패:', (err as { message: string }).message)
+      } else {
+        console.error('❌ Wallet 연결 실패:', err)
+      }
     }
   }
 
   return (
-    <button
-      onClick={onConnect}
-      disabled={isConnecting}
-      style={{
-        padding: '10px 20px',
-        fontSize: '16px',
-        background: '#4f46e5',
-        color: '#fff',
-        border: 'none',
-        borderRadius: '6px',
-        cursor: isConnecting ? 'not-allowed' : 'pointer',
-      }}
-    >
-      {isConnecting ? 'Connecting...' : 'Connect Wallet'}
-    </button>
+    <div>
+      <button
+        onClick={onConnect}
+        disabled={isConnecting}
+        style={{
+          padding: '10px 20px',
+          fontSize: '16px',
+          background: '#4f46e5',
+          color: '#fff',
+          border: 'none',
+          borderRadius: '6px',
+          cursor: isConnecting ? 'not-allowed' : 'pointer',
+        }}
+      >
+        {isConnecting ? 'Connecting...' : 'Connect Wallet'}
+      </button>
+    </div>
   )
 }

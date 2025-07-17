@@ -2,67 +2,118 @@
 
 ## 프로젝트 개요
 
-이 프로젝트는 XRPL(XRP Ledger)에서 스테이블코인을 발행하고 관리하기 위한 개발 환경입니다. Admin 지갑 생성과 Girin Wallet 연결 기능을 포함합니다.
+이 프로젝트는 XRPL(XRP Ledger)에서 스테이블코인을 발행하고 관리하며, Girin Wallet과 WalletConnect를 통해 TrustLine(TrustSet) 설정 및 토큰 송금까지 실전 환경과 유사하게 실습할 수 있는 개발 환경입니다.
 
-## 프로젝트 구조
+---
+
+## 프로젝트 구조 및 주요 파일
 
 ```
 XRPL_Axelar_test/
-├── xrpl-wallet-creator/          # 메인 프로젝트 디렉토리
+├── xrpl-wallet-creator/          # 메인 프로젝트 디렉토리 (백엔드/유틸)
 │   ├── girin-test/              # Girin Wallet 연결 프론트엔드
 │   │   ├── src/
-│   │   │   ├── lib/
-│   │   │   │   └── network.ts   # 네트워크 설정 유틸리티
-│   │   │   ├── walletconnect/   # WalletConnect 관련 컴포넌트
-│   │   │   └── App.tsx          # 메인 앱 컴포넌트
-│   │   └── package.json
+│   │   │   ├── walletconnect/
+│   │   │   │   ├── Connect.tsx         # WalletConnect 연결 컴포넌트
+│   │   │   │   └── TrustSet.tsx        # TrustLine(TrustSet) 트랜잭션 서명 컴포넌트
+│   │   │   └── App.tsx                 # 메인 앱 컴포넌트
+│   │   └── ...
 │   ├── server.ts                # Express API 서버 (지갑 주소 관리)
-│   ├── index.ts                 # XRPL Admin 지갑 생성 스크립트
-│   └── package.json
+│   ├── sendStablecoin.ts        # Admin → Girin Wallet USD 전송 스크립트
+│   ├── index.ts                 # Admin XRPL 지갑 생성/복원 스크립트
+│   └── ...
 └── README.md                    # 이 파일
 ```
 
-## 주요 기능
+---
 
-### 1. XRPL Admin 지갑 생성 (`index.ts`)
-- BIP39 니모닉을 사용한 XRPL 지갑 생성
-- 스테이블코인 발행 및 관리를 위한 Admin 지갑
-- XRPL Testnet 연결 및 자동 XRP 지급
-- 환경변수(`ADMIN_MNEMONIC`)를 통한 안전한 키 관리
+## 주요 파일별 역할 및 구조
 
-### 2. Girin Wallet 연결 (`girin-test/`)
-- WalletConnect 프로토콜을 통한 지갑 연결
-- 연결된 지갑 주소를 백엔드로 전송
-- 네트워크 설정 유틸리티 (XRPL, TRN Mainnet/Testnet)
+### 프론트엔드 (girin-test/src)
 
-### 3. API 서버 (`server.ts`)
-- **POST /api/set-girin**: 지갑 주소 저장
-- **GET /api/get-girin**: 저장된 지갑 주소 조회
-- CORS 지원으로 프론트엔드와 통신
-- 메모리 기반 주소 저장 (txt 파일 대신)
+#### **App.tsx**
+- 전체 앱의 진입점. WalletConnect 연결, Girin Wallet 주소 관리, TrustLine 설정 UI 제공.
+- **불필요한 Admin 관련 UI/로직은 모두 제거**
 
-## 기술 스택
+#### **Connect.tsx**
+- WalletConnect로 Girin Wallet 연결 및 주소 추출, 서버로 전송.
 
-### 프론트엔드
-- **React 18** + **TypeScript**
-- **Vite** (빌드 도구)
-- **WalletConnect** (지갑 연결)
+#### **TrustSet.tsx**
+- Girin Wallet에서 TrustLine(TrustSet) 트랜잭션을 직접 서명 요청.
+- useRequest 훅으로 WalletConnect 세션에 트랜잭션 전송 → Girin Wallet에서 서명 팝업 자동 표시.
 
-### 백엔드
-- **Node.js** + **Express**
-- **TypeScript**
-- **CORS** (Cross-Origin Resource Sharing)
-- **XRPL.js** (XRP Ledger 클라이언트)
-- **BIP39** (니모닉 생성)
-- **ed25519-hd-key** (키 도출)
+### 백엔드 (xrpl-wallet-creator/)
 
-## 설치 및 실행
+#### **server.ts**
+- Express API 서버. Girin Wallet/관리자 주소 관리, TrustLine 승인 등 API 제공.
+- **불필요한 TrustLine 승인/Require Auth 관련 API는 제거**
+
+#### **sendStablecoin.ts**
+- Admin이 Girin Wallet로 USD 토큰을 전송하는 스크립트. (TrustLine 설정 후 실행)
+
+#### **index.ts**
+- Admin XRPL 지갑 생성 및 복원 스크립트. (니모닉 → seed → XRPL 지갑)
+
+---
+
+## 변경/제거/합침 이력
+
+- **TrustSetWithSign.tsx**: TrustSet.tsx에 통합, 파일 삭제
+- **checkTrustLines.ts**: 진단용, 필요시만 생성/삭제
+- **App.tsx/TrustSet.tsx**: Admin 관련 UI/로직, 불필요 코드 모두 제거
+- **server.ts**: TrustLine 승인/Require Auth 관련 API 제거
+- **모든 주요 로직은 함수/컴포넌트 단위로 모듈화, 재활용 가능하게 유지**
+
+---
+
+## 주요 파일별 실무용 주석 예시
+
+### App.tsx
+```tsx
+// App.tsx - XRPL 스테이블코인 TrustLine 설정 메인 컴포넌트
+// ... (중략, 실제 파일 참고) ...
+```
+
+### Connect.tsx
+```tsx
+// Connect.tsx - Girin Wallet을 WalletConnect로 연결하는 컴포넌트
+// ... (중략, 실제 파일 참고) ...
+```
+
+### TrustSet.tsx
+```tsx
+// TrustSet.tsx - Girin Wallet에서 TrustLine(TrustSet) 트랜잭션을 직접 서명 요청
+// ... (중략, 실제 파일 참고) ...
+```
+
+### server.ts
+```ts
+// server.ts - Express API 서버, 지갑 주소 관리 및 TrustLine 승인 등 API 제공
+// ... (중략, 실제 파일 참고) ...
+```
+
+### sendStablecoin.ts
+```ts
+// sendStablecoin.ts - Admin에서 Girin Wallet로 USD 토큰 전송 스크립트
+// ... (중략, 실제 파일 참고) ...
+```
+
+### index.ts
+```ts
+// index.ts - Admin XRPL 지갑 생성 및 복원 스크립트
+// ... (중략, 실제 파일 참고) ...
+```
+
+---
+
+## 개발/실행 방법
 
 ### 1. 환경 설정
 
 ```bash
 # .env 파일 생성 (xrpl-wallet-creator 디렉토리에)
 ADMIN_MNEMONIC="your 12 or 24 word mnemonic phrase here"
+ADMIN_SEED="your admin seed"
 VITE_PROJECT_ID="your walletconnect project id"
 ```
 
@@ -81,11 +132,8 @@ npm install
 ### 3. 개발 서버 실행
 
 ```bash
-# XRPL Admin 지갑 생성 (한 번만 실행)
-cd xrpl-wallet-creator
-npm run start  # 또는 node index.ts
-
 # API 서버 실행 (포트 4000)
+cd xrpl-wallet-creator
 npm run dev
 
 # Girin Wallet 프론트엔드 실행 (포트 5173)
@@ -93,111 +141,31 @@ cd girin-test
 npm run dev
 ```
 
-### 4. 프로덕션 빌드
-
-```bash
-# Girin Wallet 프론트엔드 빌드
-cd xrpl-wallet-creator/girin-test
-npm run build
-```
-
-## API 문서
-
-### 지갑 주소 저장
-```http
-POST /api/set-girin
-Content-Type: application/json
-
-{
-  "address": "지갑_주소_문자열"
-}
-```
-
-**응답:**
-- 성공: `200 OK` + `"OK"`
-- 실패: `400 Bad Request` + `"Address is required"`
-
-### 지갑 주소 조회
-```http
-GET /api/get-girin
-```
-
-**응답:**
-```json
-{
-  "address": "저장된_지갑_주소" // 또는 null
-}
-```
-
-## XRPL Admin 지갑 생성
-
-### 환경 설정
-`.env` 파일에 Admin 지갑의 니모닉을 설정해야 합니다:
-
-```env
-ADMIN_MNEMONIC="your 12 or 24 word mnemonic phrase here"
-```
-
-### 실행 방법
+### 4. XRPL Admin 지갑 생성 (최초 1회)
 ```bash
 cd xrpl-wallet-creator
-npm run start
-# 또는
 node index.ts
 ```
 
-### 기능
-- BIP39 니모닉으로 XRPL 지갑 복원
-- XRPL Testnet 연결
-- 자동 XRP 지급 (새 지갑인 경우)
-- 스테이블코인 발행을 위한 Admin 권한 설정
+### 5. TrustLine 설정 및 스테이블코인 전송
+1. 브라우저에서 `http://localhost:5173` 접속
+2. Girin Wallet 연결 (QR코드)
+3. "TrustLine 설정" 버튼 클릭 → Girin Wallet에서 서명
+4. TrustLine 설정 후, 아래 명령어로 USD 전송
+```bash
+cd xrpl-wallet-creator
+npx ts-node sendStablecoin.ts
+```
 
-## 개발 가이드
+---
 
-### 코드 스타일
-- TypeScript 사용
-- 함수형 컴포넌트 (React)
-- ES6+ 문법
-- 한국어 주석 사용
+## 기타 참고/유의사항
+- TrustLine 설정이 완료되어야만 USD 전송이 성공합니다.
+- 프론트엔드와 백엔드 모두 포트 충돌에 주의하세요.
+- 불필요한 파일/코드는 정리되어 있으니, 구조 참고해서 확장/유지보수 하세요.
 
-### 파일 저장 방식
-- txt 파일 대신 메모리 저장소 사용
-- 서버 재시작 시 데이터 초기화됨
-- 영구 저장이 필요한 경우 데이터베이스 도입 고려
+---
 
-### 네트워크 설정
-- XRPL Mainnet/Testnet 지원
-- TRN Mainnet/Testnet 지원
-- `src/lib/network.ts`에서 네트워크 설정 관리
-
-## 문제 해결
-
-### 일반적인 문제들
-
-1. **포트 충돌**
-   - API 서버: 4000번 포트
-   - 프론트엔드: 5173번 포트
-   - 다른 프로세스가 사용 중인 경우 포트 변경
-
-2. **CORS 오류**
-   - 서버의 CORS 설정 확인
-   - 프론트엔드 URL이 허용 목록에 포함되어 있는지 확인
-
-3. **지갑 연결 실패**
-   - WalletConnect 설정 확인
-   - 네트워크 연결 상태 확인
-
-## 향후 개발 계획
-
-- [ ] 스테이블코인 발행 기능 구현
-- [ ] 스테이블코인 관리 (발행량 조절, 소각 등)
-- [ ] Axelar 브리지 기능 구현
-- [ ] XRPL 트랜잭션 처리
-- [ ] 데이터베이스 연동 (영구 저장)
-- [ ] UI/UX 개선
-- [ ] 에러 핸들링 강화
-- [ ] 테스트 코드 작성
-
-## 라이선스
-
-이 프로젝트는 MIT 라이선스 하에 배포됩니다. 
+## 문의/기여
+- 코드 구조, 모듈화, 확장성 관련 문의는 언제든 환영합니다!
+- PR/이슈 등록 시 변경/제거/합침 이력도 꼭 남겨주세요. 

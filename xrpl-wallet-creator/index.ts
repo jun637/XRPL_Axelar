@@ -17,7 +17,7 @@ export async function createAdminWallet() {
   console.log('🧠 Mnemonic:', mnemonic);
 
   // ✅ 2. 니모닉 → seed
-  const seed = await bip39.mnemonicToSeed(mnemonic);
+  const seed = await bip39.mnemonicToSeed(mnemonic); // 기린
 
   // ✅ 3. XRPL용 BIP44 경로 → 키 도출
   const path = "m/44'/144'/0'";
