@@ -183,3 +183,134 @@ ITS → Ethereum (토큰화된 XRP 전달)
 ---
 
 **⚠️**: 이 프로젝트는 테스트 목적으로 제작되었습니다. 
+
+## 단계별 핵심 로직 요약
+
+### [Step 1] XRPL 연결 및 지갑 로드
+**핵심 로직:**
+- XRPL 테스트넷에 연결하고 Admin/User 지갑을 로드합니다.
+- 파일: `step1_xrpl_connection.ts`
+```ts
+// XRPL 네트워크 연결 및 지갑 로드
+await client.connect();
+this.adminWallet = Wallet.fromSeed(adminSeed);
+this.userWallet = Wallet.fromSeed(userSeed);
+```
+
+---
+
+### [Step 2] 잔액 확인
+**핵심 로직:**
+- Admin과 User의 XRP 잔액을 확인합니다.
+- 파일: `step2_balance_check.ts`
+```ts
+// 잔액 확인
+const adminBalance = await client.getXrpBalance(adminWallet.address);
+const userBalance = await client.getXrpBalance(userWallet.address);
+```
+
+---
+
+### [Step 3] Admin → User XRP 발행
+**핵심 로직:**
+- Admin 지갑에서 User 지갑으로 XRP를 전송합니다.
+- 파일: `step3_xrpl_to_axelar.ts`
+```ts
+// ⭐ 핵심: Admin에서 User로 XRP 발행 (XRPL 내부 전송)
+const paymentTx = {
+  TransactionType: 'Payment',
+  Account: this.adminWallet.address,      // 👑 Admin 지갑 (발행자)
+  Destination: this.userWallet.address,   // 👤 User 지갑 (수신자)
+  Amount: xrpl.xrplToDrops(amount)        // 💰 전송할 XRP 양 (drops 단위로 변환)
+}
+```
+이 코드는 Admin이 User에게 실제로 XRP를 지급하는 부분입니다.
+
+---
+
+### [Step 4] User → Axelar Gateway 전송
+**핵심 로직:**
+- User가 Axelar Gateway로 XRP를 전송하며, Memo 필드에 크로스체인 정보를 포함합니다.
+- 파일: `step4_axelar_gateway_processing.ts`
+```ts
+// ⭐ 핵심: 크로스체인 전송 정보 구성
+const crossChainInfo = {
+  destinationChain: 'ethereum',           // 🎯 목적지 체인
+  destinationAddress: memoData.destinationAddress, // 🎯 최종 수신자 (이더리움 주소)
+  tokenSymbol: 'XRP',                     // 🪙 전송할 토큰
+  amount: memoData.amount,                // 💰 전송 금액
+  timestamp: Date.now(),                  // ⏰ 타임스탬프
+  transferId: ...                         // 🆔 고유 전송 ID
+}
+// ⭐ 핵심: User에서 Axelar Gateway로 XRP 전송 (크로스체인 전송 시작)
+const paymentTx = {
+  TransactionType: 'Payment',
+  Account: memoData.userAddress,           // 👤 User 지갑 (실제 전송자)
+  Destination: this.gatewayAddress,        // 🌉 Axelar Gateway 주소
+  Amount: xrpl.xrplToDrops(memoData.amount), // 💰 전송할 XRP 양
+  Memos: [{ Memo: { MemoType: memoType, MemoData: memoDataHex } }]
+}
+```
+이 코드는 User가 크로스체인 전송을 시작하는 부분입니다.
+
+---
+
+### [Step 5] ITS 토큰 등록 확인 및 크로스체인 전송
+**핵심 로직:**
+- XRP가 ITS에 등록되어 있는지 확인하고, 실제 크로스체인 전송을 요청합니다.
+- 파일: `step5_its_cross_chain_transfer.ts`
+```ts
+// ⭐ 핵심: ITS 토큰 등록 확인 (Step 5 기능 통합)
+const tokenRegistration = await this.axelarJS.getTokenRegistration({
+  tokenSymbol: 'XRP',
+  sourceChain: 'xrpl',
+  destinationChain: 'ethereum'
+});
+if (!tokenRegistration.isRegistered) {
+  throw new Error('XRP 토큰이 ITS에 등록되지 않았습니다');
+}
+// ⭐ 핵심: ITS 토큰화 전송 요청 구성 (실제 크로스체인 전송)
+const itsTransferRequest = {
+  sourceChain: 'xrpl',
+  destinationChain: 'ethereum',
+  tokenSymbol: 'XRP',
+  amount: transferParams.amount,
+  sourceAddress: transferParams.sourceAddress,
+  destinationAddress: transferParams.destinationAddress,
+  ...
+}
+```
+이 코드는 ITS를 통한 실제 크로스체인 전송의 핵심입니다.
+
+---
+
+### [Step 6] GMP 메시지 전송
+**핵심 로직:**
+- GMP(General Message Passing) 메시지를 전송하여 상태를 동기화합니다.
+- 파일: `step6_gmp_message_transmission.ts`
+```ts
+// GMP 메시지 전송
+await gmp.sendGMPMessage({ ... });
+```
+
+---
+
+### [Step 7] ITS 컨트랙트 실행
+**핵심 로직:**
+- 이더리움 등 목적지 체인에서 ITS 컨트랙트를 실행합니다.
+- 파일: `step7_its_contract_execution.ts`
+```ts
+// ITS 컨트랙트 실행
+await itsContract.executeITSContract({ ... });
+```
+
+---
+
+### [Step 8] 최종 확인
+**핵심 로직:**
+- 전체 전송 과정이 정상적으로 완료되었는지 검증합니다.
+- 파일: `step8_final_verification.ts`
+```ts
+// 최종 검증 및 리포트 생성
+await finalVerifier.performFinalVerification(...);
+``` 
