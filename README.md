@@ -1,171 +1,83 @@
-# XRPL Axelar 테스트 프로젝트
+# XRPL ↔ Axelar 크로스체인 전송 시스템
 
-## 프로젝트 개요
+이 프로젝트는 XRPL(리플)과 Ethereum 간의 크로스체인 토큰 전송을 Axelar 네트워크를 통해 구현한 시스템입니다.
 
-이 프로젝트는 XRPL(XRP Ledger)에서 스테이블코인을 발행하고 관리하며, Girin Wallet과 WalletConnect를 통해 TrustLine(TrustSet) 설정 및 토큰 송금까지 실전 환경과 유사하게 실습할 수 있는 개발 환경입니다.
+## 🚀 주요 기능
 
----
+- **Admin → User XRP 발행**: 관리자가 사용자에게 XRP 발행
+- **User → Axelar Gateway 전송**: 사용자가 Axelar Gateway로 XRP 전송
+- **ITS(Interchain Token Service) 토큰화**: XRP를 이더리움 네트워크로 토큰화 전송
+- **실시간 전송 상태 모니터링**
+- **완전한 전송 검증 및 리포트 생성**
 
-## 프로젝트 구조 및 주요 파일
+## 📁 프로젝트 구조
 
 ```
 XRPL_Axelar_test/
-├── xrpl-wallet-creator/          # 메인 프로젝트 디렉토리 (백엔드/유틸)
-│   ├── girin-test/              # Girin Wallet 연결 프론트엔드
-│   │   ├── src/
-│   │   │   ├── walletconnect/
-│   │   │   │   ├── Connect.tsx         # WalletConnect 연결 컴포넌트
-│   │   │   │   └── TrustSet.tsx        # TrustLine(TrustSet) 트랜잭션 서명 컴포넌트
-│   │   │   └── App.tsx                 # 메인 앱 컴포넌트
-│   │   └── ...
-│   ├── server.ts                # Express API 서버 (지갑 주소 관리)
-│   ├── sendStablecoin.ts        # Admin → Girin Wallet USD 전송 스크립트
-│   ├── index.ts                 # Admin XRPL 지갑 생성/복원 스크립트
-│   └── ...
+├── xrpl-wallet-creator/          # 메인 프로젝트 디렉토리
+│   ├── step1_xrpl_connection.ts          # XRPL 연결 및 지갑 로드
+│   ├── step2_balance_check.ts            # Admin/User 잔액 확인
+│   ├── step3_xrpl_to_axelar.ts           # Admin → User XRP 발행
+│   ├── step4_axelar_gateway_processing.ts # User → Axelar Gateway 전송
+│   ├── step5_its_cross_chain_transfer.ts # ITS 토큰 등록 확인 및 크로스체인 전송
+│   ├── step6_gmp_message_transmission.ts # GMP 메시지 전송
+│   ├── step7_its_contract_execution.ts   # ITS 컨트랙트 실행
+│   ├── step8_final_verification.ts       # 최종 확인
+│   ├── run-complete-transfer.ts          # 전체 실행 스크립트
+│   └── README.md                         # 상세 사용법 및 설정 가이드
 └── README.md                    # 이 파일
 ```
 
----
-
-## 주요 파일별 역할 및 구조
-
-### 프론트엔드 (girin-test/src)
-
-#### **App.tsx**
-- 전체 앱의 진입점. WalletConnect 연결, Girin Wallet 주소 관리, TrustLine 설정 UI 제공.
-- **불필요한 Admin 관련 UI/로직은 모두 제거**
-
-#### **Connect.tsx**
-- WalletConnect로 Girin Wallet 연결 및 주소 추출, 서버로 전송.
-
-#### **TrustSet.tsx**
-- Girin Wallet에서 TrustLine(TrustSet) 트랜잭션을 직접 서명 요청.
-- useRequest 훅으로 WalletConnect 세션에 트랜잭션 전송 → Girin Wallet에서 서명 팝업 자동 표시.
-
-### 백엔드 (xrpl-wallet-creator/)
-
-#### **server.ts**
-- Express API 서버. Girin Wallet/관리자 주소 관리, TrustLine 승인 등 API 제공.
-- **불필요한 TrustLine 승인/Require Auth 관련 API는 제거**
-
-#### **sendStablecoin.ts**
-- Admin이 Girin Wallet로 USD 토큰을 전송하는 스크립트. (TrustLine 설정 후 실행)
-
-#### **index.ts**
-- Admin XRPL 지갑 생성 및 복원 스크립트. (니모닉 → seed → XRPL 지갑)
-
----
-
-## 변경/제거/합침 이력
-
-- **TrustSetWithSign.tsx**: TrustSet.tsx에 통합, 파일 삭제
-- **checkTrustLines.ts**: 진단용, 필요시만 생성/삭제
-- **App.tsx/TrustSet.tsx**: Admin 관련 UI/로직, 불필요 코드 모두 제거
-- **server.ts**: TrustLine 승인/Require Auth 관련 API 제거
-- **모든 주요 로직은 함수/컴포넌트 단위로 모듈화, 재활용 가능하게 유지**
-
----
-
-## 주요 파일별 실무용 주석 예시
-
-### App.tsx
-```tsx
-// App.tsx - XRPL 스테이블코인 TrustLine 설정 메인 컴포넌트
-// ... (중략, 실제 파일 참고) ...
-```
-
-### Connect.tsx
-```tsx
-// Connect.tsx - Girin Wallet을 WalletConnect로 연결하는 컴포넌트
-// ... (중략, 실제 파일 참고) ...
-```
-
-### TrustSet.tsx
-```tsx
-// TrustSet.tsx - Girin Wallet에서 TrustLine(TrustSet) 트랜잭션을 직접 서명 요청
-// ... (중략, 실제 파일 참고) ...
-```
-
-### server.ts
-```ts
-// server.ts - Express API 서버, 지갑 주소 관리 및 TrustLine 승인 등 API 제공
-// ... (중략, 실제 파일 참고) ...
-```
-
-### sendStablecoin.ts
-```ts
-// sendStablecoin.ts - Admin에서 Girin Wallet로 USD 토큰 전송 스크립트
-// ... (중략, 실제 파일 참고) ...
-```
-
-### index.ts
-```ts
-// index.ts - Admin XRPL 지갑 생성 및 복원 스크립트
-// ... (중략, 실제 파일 참고) ...
-```
-
----
-
-## 개발/실행 방법
-
-### 1. 환경 설정
+## 🎯 빠른 시작
 
 ```bash
-# .env 파일 생성 (xrpl-wallet-creator 디렉토리에)
-ADMIN_MNEMONIC="your 12 or 24 word mnemonic phrase here"
-ADMIN_SEED="your admin seed"
-VITE_PROJECT_ID="your walletconnect project id"
-```
+# 프로젝트 클론
+git clone <repository-url>
+cd XRPL_Axelar_test/xrpl-wallet-creator
 
-### 2. 의존성 설치
-
-```bash
-# 메인 프로젝트 의존성 설치
-cd xrpl-wallet-creator
+# 의존성 설치
 npm install
 
-# Girin Wallet 프론트엔드 의존성 설치
-cd girin-test
-npm install
+# 전체 크로스체인 전송 실행
+npm run complete-transfer
 ```
 
-### 3. 개발 서버 실행
+## 📖 상세 가이드
 
-```bash
-# API 서버 실행 (포트 4000)
-cd xrpl-wallet-creator
-npm run dev
+**설치, 설정, 사용법 등 상세한 내용은 [xrpl-wallet-creator/README.md](./xrpl-wallet-creator/README.md)를 참조하세요.**
 
-# Girin Wallet 프론트엔드 실행 (포트 5173)
-cd girin-test
-npm run dev
+## 🔧 기술 스택
+
+- **Blockchain**: XRPL, Ethereum, Axelar
+- **Language**: TypeScript
+- **Libraries**: 
+  - `xrpl`: XRPL 클라이언트
+  - `ethers`: Ethereum 인터페이스
+  - `@axelar-network/axelarjs-sdk`: Axelar SDK
+  - `@axelar-network/interchain-token-service`: ITS 서비스
+
+## 🔄 전송 흐름
+
+```
+Admin 지갑 → User 지갑 (XRP 발행)
+     ↓
+User 지갑 → Axelar Gateway (크로스체인 전송)
+     ↓
+Axelar Gateway → ITS (토큰화)
+     ↓
+ITS → Ethereum (토큰화된 XRP 전달)
 ```
 
-### 4. XRPL Admin 지갑 생성 (최초 1회)
-```bash
-cd xrpl-wallet-creator
-node index.ts
-```
+## 🚨 주의사항
 
-### 5. TrustLine 설정 및 스테이블코인 전송
-1. 브라우저에서 `http://localhost:5173` 접속
-2. Girin Wallet 연결 (QR코드)
-3. "TrustLine 설정" 버튼 클릭 → Girin Wallet에서 서명
-4. TrustLine 설정 후, 아래 명령어로 USD 전송
-```bash
-cd xrpl-wallet-creator
-npx ts-node sendStablecoin.ts
-```
+- 이 프로젝트는 **테스트넷**용으로 설계되었습니다
+- 실제 자금을 사용하기 전에 충분한 테스트를 진행하세요
+- 개인키는 절대 공개하지 마세요
+
+## 📄 라이선스
+
+이 프로젝트는 MIT 라이선스 하에 배포됩니다.
 
 ---
 
-## 기타 참고/유의사항
-- TrustLine 설정이 완료되어야만 USD 전송이 성공합니다.
-- 프론트엔드와 백엔드 모두 포트 충돌에 주의하세요.
-- 불필요한 파일/코드는 정리되어 있으니, 구조 참고해서 확장/유지보수 하세요.
-
----
-
-## 문의/기여
-- 코드 구조, 모듈화, 확장성 관련 문의는 언제든 환영합니다!
-- PR/이슈 등록 시 변경/제거/합침 이력도 꼭 남겨주세요. 
+**⚠️**: 이 프로젝트는 테스트 목적으로 제작되었습니다. 

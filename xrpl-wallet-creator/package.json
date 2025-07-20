@@ -1,35 +1,33 @@
 {
   "name": "xrpl-wallet-creator",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "run-complete-transfer.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "complete-transfer": "ts-node run-complete-transfer.ts",
+    "step1": "ts-node step1_xrpl_connection.ts",
+    "step2": "ts-node step2_balance_check.ts",
+    "step3": "ts-node step3_xrpl_to_axelar.ts",
+    "step4": "ts-node step4_axelar_gateway_processing.ts",
+    "step5": "ts-node step6_its_cross_chain_transfer.ts",
+    "step6": "ts-node step7_gmp_message_transmission.ts",
+    "step7": "ts-node step8_its_contract_execution.ts",
+    "step8": "ts-node step9_final_verification.ts"
   },
-  "keywords": [],
+  "keywords": ["xrpl", "axelar", "cross-chain", "blockchain"],
   "author": "",
   "license": "ISC",
-  "description": "",
+  "description": "XRPL ↔ Axelar 크로스체인 전송 시스템",
   "dependencies": {
-    "@walletconnect/modal-sign-react": "^2.7.0",
-    "@walletconnect/types": "^2.21.4",
-    "@walletconnect/utils": "^2.21.4",
+    "@axelar-network/axelarjs-sdk": "^0.17.5-alpha.7",
+    "@axelar-network/interchain-token-service": "^2.1.1",
     "axios": "^1.10.0",
-    "bip39": "^3.1.0",
-    "cors": "^2.8.5",
     "dotenv": "^17.2.0",
-    "ed25519-hd-key": "^1.3.0",
     "ethers": "^6.15.0",
-    "express": "^5.1.0",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0",
     "xrpl": "^4.3.0"
   },
   "devDependencies": {
-    "@types/cors": "^2.8.19",
-    "@types/express": "^5.0.3",
     "@types/node": "^24.0.14",
-    "@types/react": "^19.1.8",
-    "@types/react-dom": "^19.1.6",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
   }
