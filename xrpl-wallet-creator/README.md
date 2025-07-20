@@ -1,6 +1,51 @@
 # XRPL ↔ Axelar 크로스체인 전송 시스템
 
-이 프로젝트는 XRPL(리플)과 Ethereum 간의 크로스체인 토큰 전송을 Axelar 네트워크를 통해 구현한 시스템입니다.
+이 프로젝트는 **XRPL(리플) 네트워크에서 스테이블코인(또는 XRP/IOU)을 발행**한 뒤, **Axelar Interchain Token Service(ITS)**를 활용하여 이더리움 등 타 블록체인 네트워크로 안전하게 크로스체인 전송하는 과정을 자동화한 시스템입니다.
+
+### 🏦 시스템 구조 및 핵심 원리
+
+**XRPL에는 스마트컨트랙트가 없으므로, 모든 상호작용은 Payment 트랜잭션 + Memo 필드로 이루어집니다.**
+
+- **Axelar Gateway 및 ITS 역할은 XRPL의 multisig 계정이 대행**
+- **사용자는 multisig 계정으로 Payment를 보내고, Memo에 크로스체인 정보를 담아 전송**
+- **Axelar 네트워크가 Memo 정보를 해석하여 타 체인으로 토큰화 전송**
+
+### 🔗 실제 크로스체인 전송 트랜잭션 구조
+
+```json
+{
+  "TransactionType": "Payment",
+  "Account": "user.address",           // 송신자 XRPL 계정
+  "Amount": "1000000",                 // 전송할 XRP(또는 IOU) drops 단위, 가스 포함
+  "Destination": "multisig.address",   // Axelar multisig 계정
+  "Memos": [
+    {
+      "Memo": {
+        "MemoType": "74797065",        // hex("type")
+        "MemoData": "696e746572636861696e5f7472616e73666572" // hex("interchain_transfer")
+      }
+    },
+    {
+      "Memo": {
+        "MemoType": "64657374696e6174696f6e5f61646472657373", // hex("destination_address")
+        "MemoData": "<hex-encoded EVM address>" // 예: 0x... (0x 없이, hex 인코딩)
+      }
+    },
+    {
+      "Memo": {
+        "MemoType": "64657374696E6174696F6E5F636861696E", // hex("destination_chain")
+        "MemoData": "<hex-encoded chain name>" // 예: xrpl-evm-devnet
+      }
+    },
+    {
+      "Memo": {
+        "MemoType": "6761735f6665655f616d6f756e74", // hex("gas_fee_amount")
+        "MemoData": "<hex-encoded gas fee>" // 예: 30 (drops)
+      }
+    }
+  ]
+}
+```
 
 ## 🚀 주요 기능
 
@@ -133,12 +178,21 @@ xrpl-wallet-creator/
 ```
 Admin 지갑 → User 지갑 (XRP 발행)
      ↓
-User 지갑 → Axelar Gateway (크로스체인 전송)
+User 지갑 → Axelar multisig (Payment + Memo)
      ↓
-Axelar Gateway → ITS (토큰화)
+multisig → Axelar 네트워크 (Memo 해석)
      ↓
-ITS → Ethereum (토큰화된 XRP 전달)
+Axelar ITS → Ethereum (토큰화된 XRP 전달)
 ```
+
+### 💡 실전 예시
+
+```bash
+# Axelar 공식 문서의 실제 명령어 예시
+ts-node xrpl/interchain-transfer.js -e devnet-amplifier -n xrpl XRP 1 xrpl-evm-sidechain 0x0A90c0Af1B07f6AC34f3520348Dbfae73BDa358E --gasFeeAmount 0
+```
+
+위 명령어는 XRPL에서 1 XRP를 EVM 사이드체인 주소로 전송하는 예시입니다. 실제로는 Payment 트랜잭션의 Memo에 크로스체인 정보가 담깁니다.
 
 ## 🚨 주의사항
 
@@ -230,8 +284,46 @@ const paymentTx = {
 
 ### [Step 4] User → Axelar Gateway 전송
 **핵심 로직:**
-- User가 Axelar Gateway로 XRP를 전송하며, Memo 필드에 크로스체인 정보를 포함합니다.
+- User가 Axelar Gateway(multisig 계정)로 XRP를 전송하며, Memo 필드에 크로스체인 정보를 포함합니다.
 - 파일: `step4_axelar_gateway_processing.ts`
+
+**실제 트랜잭션 구조 (Axelar 공식 문서 기반):**
+```json
+{
+  "TransactionType": "Payment",
+  "Account": "user.address",           // 👤 User 지갑 (실제 전송자)
+  "Amount": "1000000",                 // 💰 전송할 XRP 양 (drops 단위)
+  "Destination": "multisig.address",   // 🌉 Axelar multisig 계정 (Gateway 역할)
+  "Memos": [
+    {
+      "Memo": {
+        "MemoType": "74797065",        // hex("type")
+        "MemoData": "696e746572636861696e5f7472616e73666572" // hex("interchain_transfer")
+      }
+    },
+    {
+      "Memo": {
+        "MemoType": "64657374696e6174696f6e5f61646472657373", // hex("destination_address")
+        "MemoData": "<hex-encoded EVM address>" // 🎯 이더리움 주소 (0x 없이)
+      }
+    },
+    {
+      "Memo": {
+        "MemoType": "64657374696E6174696F6E5F636861696E", // hex("destination_chain")
+        "MemoData": "<hex-encoded chain name>" // 🎯 목적지 체인 (예: xrpl-evm-devnet)
+      }
+    },
+    {
+      "Memo": {
+        "MemoType": "6761735f6665655f616d6f756e74", // hex("gas_fee_amount")
+        "MemoData": "<hex-encoded gas fee>" // ⛽ 가스 수수료
+      }
+    }
+  ]
+}
+```
+
+**코드 구현:**
 ```ts
 // ⭐ 핵심: 크로스체인 전송 정보 구성
 const crossChainInfo = {
@@ -251,7 +343,8 @@ const paymentTx = {
   Memos: [{ Memo: { MemoType: memoType, MemoData: memoDataHex } }]
 }
 ```
-이 코드는 User가 크로스체인 전송을 시작하는 부분입니다.
+
+**설명:** 이 코드는 User가 크로스체인 전송을 시작하는 부분입니다. Axelar 공식 문서의 트랜잭션 구조와 동일하게, multisig 계정으로 Payment를 보내고 Memo 필드에 크로스체인 정보를 hex로 인코딩하여 포함합니다.
 
 ---
 
@@ -259,6 +352,13 @@ const paymentTx = {
 **핵심 로직:**
 - XRP가 ITS에 등록되어 있는지 확인하고, 실제 크로스체인 전송을 요청합니다.
 - 파일: `step5_its_cross_chain_transfer.ts`
+
+**실제 ITS 전송 과정:**
+1. **multisig 계정이 Memo 정보를 해석**하여 Axelar 네트워크로 전달
+2. **Axelar ITS가 XRPL의 XRP를 이더리움의 토큰화된 XRP로 변환**
+3. **목적지 체인에서 토큰화된 자산을 수령자에게 전달**
+
+**코드 구현:**
 ```ts
 // ⭐ 핵심: ITS 토큰 등록 확인 (Step 5 기능 통합)
 const tokenRegistration = await this.axelarJS.getTokenRegistration({
@@ -271,16 +371,24 @@ if (!tokenRegistration.isRegistered) {
 }
 // ⭐ 핵심: ITS 토큰화 전송 요청 구성 (실제 크로스체인 전송)
 const itsTransferRequest = {
-  sourceChain: 'xrpl',
-  destinationChain: 'ethereum',
-  tokenSymbol: 'XRP',
-  amount: transferParams.amount,
-  sourceAddress: transferParams.sourceAddress,
-  destinationAddress: transferParams.destinationAddress,
-  ...
+  sourceChain: 'xrpl',                     // 📤 출발 체인
+  destinationChain: 'ethereum',            // 📥 목적지 체인
+  tokenSymbol: 'XRP',                      // 🪙 토큰 심볼
+  amount: transferParams.amount,           // 💰 전송 금액
+  sourceAddress: transferParams.sourceAddress,      // 👤 User 지갑 주소 (XRPL)
+  destinationAddress: transferParams.destinationAddress, // 🎯 이더리움 주소
+  tokenId: tokenRegistration.tokenId,      // 🆔 토큰 ID
+  fee: fee,                                // 💸 수수료
+  gasLimit: this.estimateGasLimit('ethereum'), // ⛽ 가스 한도
+  gasPrice: await this.getGasPrice('ethereum'), // ⛽ 가스 가격
+  // 🚀 ITS 특별 파라미터 (크로스체인 전송용)
+  interchainTokenId: tokenRegistration.interchainTokenId, // 🔗 인터체인 토큰 ID
+  salt: this.generateSalt(),               // 🧂 보안용 솔트
+  expiry: Date.now() + (30 * 60 * 1000)   // ⏰ 만료 시간 (30분)
 }
 ```
-이 코드는 ITS를 통한 실제 크로스체인 전송의 핵심입니다.
+
+**설명:** 이 코드는 ITS를 통한 실제 크로스체인 전송의 핵심입니다. Step 4에서 multisig로 보낸 Payment 트랜잭션의 Memo 정보를 바탕으로, Axelar ITS가 XRPL의 네이티브 XRP를 이더리움의 토큰화된 XRP로 변환하여 전송합니다.
 
 ---
 
@@ -288,10 +396,50 @@ const itsTransferRequest = {
 **핵심 로직:**
 - GMP(General Message Passing) 메시지를 전송하여 상태를 동기화합니다.
 - 파일: `step6_gmp_message_transmission.ts`
+
+**실제 GMP 트랜잭션 구조 (Axelar 공식 문서 기반):**
+```json
+{
+  "TransactionType": "Payment",
+  "Account": "user.address",           // 송신자 XRPL 계정
+  "Amount": "1000000",                 // 가스 수수료용 XRP (drops)
+  "Destination": "multisig.address",   // Axelar multisig 계정
+  "Memos": [
+    {
+      "Memo": {
+        "MemoType": "74797065",        // hex("type")
+        "MemoData": "63616c6c5f636f6e7472616374" // hex("call_contract")
+      }
+    },
+    {
+      "Memo": {
+        "MemoType": "64657374696e6174696f6e5f61646472657373", // hex("destination_address")
+        "MemoData": "<hex-encoded contract address>" // 스마트컨트랙트 주소
+      }
+    },
+    {
+      "Memo": {
+        "MemoType": "64657374696E6174696F6E5F636861696E", // hex("destination_chain")
+        "MemoData": "<hex-encoded chain name>" // 목적지 체인
+      }
+    },
+    {
+      "Memo": {
+        "MemoType": "7061796c6f6164", // hex("payload")
+        "MemoData": "<abi-encoded payload>" // 스마트컨트랙트 호출 데이터
+      }
+    }
+  ]
+}
+```
+
+**코드 구현:**
 ```ts
 // GMP 메시지 전송
 await gmp.sendGMPMessage({ ... });
 ```
+
+**설명:** GMP는 순수한 메시지 전송으로, 토큰 전송 없이 스마트컨트랙트를 호출할 수 있습니다. Step 4와 동일한 구조이지만 MemoType이 "call_contract"이고 payload가 포함됩니다.
 
 ---
 
