@@ -1,6 +1,6 @@
 # XRPL ↔ Axelar 크로스체인 전송 시스템
 
-이 프로젝트는 XRPL에서 스테이블코인(XRP/IOU)을 발행한 뒤, Axelar Interchain Token Service(ITS)를 활용하여 이더리움 등 타 블록체인 네트워크로 안전하게 크로스체인 전송하는 과정을 구현한 시뮬레이션 코드드입니다.
+이 프로젝트는 XRPL에서 스테이블코인(XRP/IOU)을 발행한 뒤, Axelar Interchain Token Service(ITS)를 활용하여 이더리움 등 타 블록체인 네트워크로 안전하게 크로스체인 전송하는 과정을 구현한 시뮬레이션 코드입니다.
 
 ### 🏦 시스템 구조 및 핵심 원리
 
