@@ -142,7 +142,10 @@ if (result.result.meta?.TransactionResult === 'tesSUCCESS') {
   console.log('✅ TrustLine 설정 완료')
 }
 ```
-
+* XRPL에서는 XRPL의 네이티브 토큰인 XRP를 제외한 IOU(토큰)를 받으려면, 해당 IOU의 issuer에 대해 trustline을 먼저 설정해야 합니다.
+* 받는 쪽(수신자)이 반드시 해당 issuer에 대해 trustline을 먼저 설정해야 그 토큰을 받을 수 있습니다.
+* 위 코드는 XRPL에서 Trustline을 설정하기 위한 TrustSet 트랜잭션 예시 코드입니다.
+  
 ### XRP/IOU 전송(Payment)
 - [XRPL 공식 Payment 트랜잭션](https://xrpl.org/payment.html)
 ```typescript
