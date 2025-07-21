@@ -334,56 +334,7 @@ if (result.result.meta?.TransactionResult === 'tesSUCCESS') {
 }
 ```
 
-### 🔐 멀티서명 설정
 
-```typescript
-// SignerListSet 트랜잭션
-const signerAccounts = ['rAccount1', 'rAccount2', 'rAccount3']
-
-const signerListTx = {
-  TransactionType: 'SignerListSet',
-  Account: userWallet.address,
-  SignerQuorum: 2, // 서명자 중 2명이 서명해야 함
-  SignerEntries: signerAccounts.map((account, index) => ({
-    SignerEntry: {
-      Account: account,
-      SignerWeight: 1
-    }
-  })),
-  Fee: '12'
-}
-
-const prepared = await client.autofill(signerListTx)
-const signed = userWallet.sign(prepared)
-const result = await client.submitAndWait(signed.tx_blob)
-
-if (result.result.meta?.TransactionResult === 'tesSUCCESS') {
-  console.log('✅ 멀티서명 설정 완료')
-  console.log(`👥 서명자: ${signerAccounts.join(', ')}`)
-  console.log(`📊 필요 서명 수: 2`)
-}
-```
-
-### 🧹 계정 삭제
-
-```typescript
-// AccountDelete 트랜잭션 (XRP 2.0+)
-const deleteTx = {
-  TransactionType: 'AccountDelete',
-  Account: userWallet.address,
-  Destination: adminWallet.address, // 남은 XRP를 받을 주소
-  Fee: '5000000' // 5 XRP (계정 삭제 수수료)
-}
-
-const prepared = await client.autofill(deleteTx)
-const signed = userWallet.sign(prepared)
-const result = await this.client.submitAndWait(signed.tx_blob)
-
-if (result.result.meta?.TransactionResult === 'tesSUCCESS') {
-  console.log('✅ 계정 삭제 완료')
-  console.log(`💰 남은 XRP가 ${adminWallet.address}로 전송됨`)
-}
-```
 
 ## 📊 전송 과정
 
