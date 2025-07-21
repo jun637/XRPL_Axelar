@@ -173,15 +173,14 @@ import { Client, Wallet } from 'xrpl'
 const client = new Client('wss://s.altnet.rippletest.net:51233')
 await client.connect()
 
-// 기존 지갑 로드
+// 기존 지갑 로드(admin용)
 const adminWallet = Wallet.fromSeed('sEdThoRiyqRs7jZaBvYoL2ePXfQc5A6')
-const userWallet = Wallet.fromSeed('sEd7Su6LCR6xaA1aYd3cHrWi6U4nRWg')
 ```
 
 ### 🆕 지갑 생성 트랜잭션
 
 ```typescript
-// 1. 새 지갑 생성
+// 1. 새 지갑 생성(user)
 const newWallet = Wallet.generate()
 console.log(`📍 주소: ${newWallet.address}`)
 console.log(`🔑 시드: ${newWallet.seed}`)
