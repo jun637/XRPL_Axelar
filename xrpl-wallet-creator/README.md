@@ -73,6 +73,7 @@ XRPL(XRP Ledger)에서 발행한 스테이블코인(IOU)을 Axelar Interchain To
 npm install
 cp .env.example .env # 환경변수 파일 생성 후 값 입력
 ```
+---
 
 ## XRPL 핵심 코드 및 설명
 
@@ -159,6 +160,7 @@ const iouPaymentTx = {
   Fee: '12'
 }
 ```
+---
 ## Axelar 핵심 코드 및 설명
 
 ### 크로스체인 전송 관련 트랜잭션(Memo)
@@ -225,6 +227,7 @@ await interchainTransfer({
   // payloadHex: '...' // GMP 호출 시에만
 })
 ```
+---
 
 ## 🔄 전송 흐름
 
