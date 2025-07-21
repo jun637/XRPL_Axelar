@@ -8,15 +8,16 @@ XRPL(XRP Ledger)에서 발행한 스테이블코인(IOU)을 Axelar Interchain To
 2. [핵심 용어](#핵심-용어)
 3. [전체 흐름](#전체-흐름)
 4. [설치 및 환경설정](#설치-및-환경설정)
-5. [단계별 핵심 코드 및 설명](#단계별-핵심-코드-및-설명)
+5. [XRPL 핵심 코드 및 설명](#XRPL-핵심-코드-및-설명)
     - [XRPL 연결 및 지갑 생성](#xrpl-연결-및-지갑-생성)
     - [계정 활성화(Payment)](#계정-활성화payment)
     - [TrustSet(신뢰설정)](#trustset신뢰설정)
     - [XRP/IOU 전송(Payment)](#xrpiou-전송payment)
     - [크로스체인 전송(Memo)](#크로스체인-전송memo)
-6. [참고 자료/공식 문서](#참고-자료공식-문서)
-7. [주의사항](#주의사항)
-8. [라이선스](#라이선스)
+6. [Axelar 핵심 코드 및 설명](#Axelar-핵심-코드-및-설명)
+7. [참고 자료/공식 문서](#참고-자료공식-문서)
+8. [주의사항](#주의사항)
+9. [라이선스](#라이선스)
 
 ## 기술 스택
 - **Blockchain**: XRPL, Ethereum, Axelar
@@ -71,7 +72,7 @@ npm install
 cp .env.example .env # 환경변수 파일 생성 후 값 입력
 ```
 
-## 단계별 핵심 코드 및 설명
+## XRPL 핵심 코드 및 설명
 
 ### XRPL 연결 및 지갑 생성
 - [XRPL 공식 문서: JS 라이브러리](https://js.xrpl.org/)
@@ -156,33 +157,56 @@ const iouPaymentTx = {
   Fee: '12'
 }
 ```
+## Axelar 핵심 코드 및 설명
 
-### 크로스체인 전송(Memo)
-- [Axelar 공식 문서: XRPL ↔ EVM](https://docs.axelar.dev/dev/xrpl)
-=======
-### ⚙️ 계정 설정 트랜잭션
-
-```typescript
-// AccountSet 트랜잭션 (계정 속성 설정)
-const accountSetTx = {
-  TransactionType: 'AccountSet',
+### 크로스체인 전송 관련 트랜잭션(Memo)
+- [Axelar 공식 문서: XRPL ITS](https://docs.axelar.dev/dev/send-tokens/xrpl/xrpl-its/)
+- 
+// 크로스체인 전송 트랜잭션 예시 (Axelar 공식 문서 기반)
+const crossChainTx = {
+  TransactionType: "Payment",
   Account: userWallet.address,
-  Domain: '736F6D65646F6D61696E2E636F6D', // hex("somedomain.com")
-  EmailHash: 'F939A06C3C4B3C4B3C4B3C4B3C4B3C4B3C4B3C4B', // 이메일 해시
-  MessageKey: '03AB40A0490F9B7ED8DF29D246BF2D6269820A0EE7742ACDD457BEA7C7D0931EDB', // 메시지 키
-  TransferRate: 0, // 전송 수수료율 (0 = 수수료 없음)
-  TickSize: 5, // 가격 틱 크기
-  Fee: '12'
+  Amount: "1000000", // (1 XRP)
+  // Amount: { // alternatively, an IOU token amount can be used to cover gas fees
+  //   currency: "ABC", // IOU의 currency code
+  //   issuer: "r4DVHyEisbgQRAXCiMtP2xuz5h3dDkwqf1", // IOU issuer의 XRPL 주소
+  //   value: "1" // 브릿지할 IOU 수량 (이 예시에서는 1 ABC.r4DVH, 가스비 포함)
+  // },
+  Destination: gateway.address, // Axelar Gateway XRPL 주소
+  Memos: [
+    {
+      Memo: {
+        MemoType: "74797065", // hex("type")
+        MemoData: "696e746572636861696e5f7472616e73666572" // hex("interchain_transfer")
+      },
+    },
+    {
+      Memo: {
+        MemoType: "64657374696e6174696f6e5f61646472657373", // hex("destination_address")
+        MemoData: "30413930633041663142303766364143333466333532303334384462666165373342446133353845" // hex("0A90c0Af1B07f6AC34f3520348Dbfae73BDa358E"), 0x 없이
+      },
+    },
+    {
+      Memo: {
+        MemoType: "64657374696E6174696F6E5F636861696E", // hex("destination_chain")
+        MemoData: "7872706c2d65766d2d6465766e6574", // hex("xrpl-evm-devnet")
+      },
+    },
+    {
+      Memo: {
+        MemoType: "6761735f6665655f616d6f756e74", // hex("gas_fee_amount")
+        MemoData: "30", // 가스비
+      },
+    },
+    { // GMP 호출 시에만 포함
+      Memo: {
+        MemoType: "7061796c6f6164", // hex("payload")
+        // abi-encoded payload/data with which to call the Executable destination contract address:
+        MemoData: "0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000e474d5020776f726b7320746f6f3f000000000000000000000000000000000000",
+      },
+    },
+  ],
 }
-
-const prepared = await client.autofill(accountSetTx)
-const signed = userWallet.sign(prepared)
-const result = await client.submitAndWait(signed.tx_blob)
-
-if (result.result.meta?.TransactionResult === 'tesSUCCESS') {
-  console.log('✅ AccountSet 설정 완료')
-}
-```
 
 
 
