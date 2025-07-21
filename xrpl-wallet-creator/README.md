@@ -83,7 +83,7 @@ cp .env.example .env # 환경변수 파일 생성 후 값 입력
 ## XRPL 핵심 코드 및 설명
 
 ### XRPL 연결 및 지갑 생성
-- [XRPL 공식 문서: JS 라이브러리 - 지갑 생성](https://js.xrpl.org/interfaces/Wallet.html#generate)
+- [XRPL 공식 문서: JS 라이브러리 - 지갑 생성](https://js.xrpl.org/classes/Wallet.html)
 ```typescript
 <<<<<<< HEAD
 import { Client, Wallet } from 'xrpl'
