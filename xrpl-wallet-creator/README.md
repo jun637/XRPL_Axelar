@@ -262,7 +262,7 @@ const paymentTx = {
 - 파일: `step4_user_to_gateway_payment.ts`
 
 **실제 트랜잭션 구조 (Axelar 공식 문서 기반):**
->>>>>>> 6216f0dab24f220700564267e047585416368687
+[ITS Interchain transfer](https://github.com/axelarnetwork/axelar-contract-deployments/blob/main/xrpl/interchain-transfer.js)
 ```json
 {
   "TransactionType": "Payment",
