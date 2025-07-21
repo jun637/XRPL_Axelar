@@ -26,12 +26,28 @@ XRPL(리플)에서 발행한 스테이블코인(XRP/IOU)을 Axelar Interchain To
   - [`@axelar-network/axelarjs-sdk`](https://docs.axelar.dev/dev/axelarjs-sdk): Axelar SDK
   - [`@axelar-network/interchain-token-service`](https://docs.axelar.dev/dev/interchain-token-service): ITS 서비스
 
+<<<<<<< HEAD
 ## 전체 흐름
 ```
 1. Admin이 XRPL에서 User에게 XRP(또는 IOU) 발행
 2. User가 Axelar Gateway(multisig)로 Payment + Memo 전송
 3. Axelar 네트워크가 Memo 해석, ITS를 통해 타 체인으로 토큰화
 4. 목적지 체인(Ethereum 등)에서 User가 토큰 수령
+=======
+## 💻 XRPL 핵심 트랜잭션 코드
+
+### 🔌 XRPL 연결 및 기본 설정
+
+```typescript
+import { Client, Wallet } from 'xrpl'
+
+// XRPL 클라이언트 초기화
+const client = new Client('wss://s.altnet.rippletest.net:51233')
+await client.connect()
+
+// 기존 지갑 로드(admin용)
+const adminWallet = Wallet.fromSeed('sEdThoRiyqRs7jZaBvYoL2ePXfQc5A6')
+>>>>>>> 6216f0dab24f220700564267e047585416368687
 ```
 
 ## 설치 및 환경설정
@@ -45,11 +61,14 @@ cp .env.example .env # 환경변수 파일 생성 후 값 입력
 ### XRPL 연결 및 지갑 생성
 - [XRPL 공식 문서: JS 라이브러리](https://js.xrpl.org/)
 ```typescript
+<<<<<<< HEAD
 import { Client, Wallet } from 'xrpl'
 const client = new Client('wss://s.altnet.rippletest.net:51233')
 await client.connect()
 // 기존 지갑 로드(admin용)
 const adminWallet = Wallet.fromSeed('sEdThoRiyqRs7jZaBvYoL2ePXfQc5A6')
+=======
+>>>>>>> 6216f0dab24f220700564267e047585416368687
 // 1. 새 지갑 생성(user)
 const newWallet = Wallet.generate()
 console.log(`📍 주소: ${newWallet.address}`)
@@ -123,8 +142,163 @@ const iouPaymentTx = {
 }
 ```
 
+<<<<<<< HEAD
 ### 크로스체인 전송(Memo)
 - [Axelar 공식 문서: XRPL ↔ EVM](https://docs.axelar.dev/dev/xrpl)
+=======
+### ⚙️ 계정 설정 트랜잭션
+
+```typescript
+// AccountSet 트랜잭션 (계정 속성 설정)
+const accountSetTx = {
+  TransactionType: 'AccountSet',
+  Account: userWallet.address,
+  Domain: '736F6D65646F6D61696E2E636F6D', // hex("somedomain.com")
+  EmailHash: 'F939A06C3C4B3C4B3C4B3C4B3C4B3C4B3C4B3C4B', // 이메일 해시
+  MessageKey: '03AB40A0490F9B7ED8DF29D246BF2D6269820A0EE7742ACDD457BEA7C7D0931EDB', // 메시지 키
+  TransferRate: 0, // 전송 수수료율 (0 = 수수료 없음)
+  TickSize: 5, // 가격 틱 크기
+  Fee: '12'
+}
+
+const prepared = await client.autofill(accountSetTx)
+const signed = userWallet.sign(prepared)
+const result = await client.submitAndWait(signed.tx_blob)
+
+if (result.result.meta?.TransactionResult === 'tesSUCCESS') {
+  console.log('✅ AccountSet 설정 완료')
+}
+```
+
+
+
+## 📊 전송 과정
+
+1. **XRPL 연결**: XRPL 테스트넷에 연결하고 Admin/User 지갑 로드
+2. **잔액 확인**: Admin과 User 계정의 XRP 잔액 확인
+3. **Admin → User XRP 발행**: 관리자가 사용자에게 XRP 전송
+4. **User → Axelar Gateway 전송**: 사용자가 Axelar Gateway로 XRP 전송 (크로스체인 정보 포함)
+5. **ITS 토큰 등록 확인 및 크로스체인 전송**: ITS에서 XRP 토큰 등록 상태 확인 후 크로스체인 전송
+6. **GMP 메시지 전송**: General Message Passing 메시지 전송
+7. **ITS 컨트랙트 실행**: 목적지 체인에서 ITS 컨트랙트 실행
+8. **최종 확인**: 전체 전송 과정 검증 및 완료
+
+## 🔄 전송 흐름
+
+```
+Admin 지갑 → User 지갑 (XRP 발행)
+     ↓
+User 지갑 → Axelar multisig (Payment + Memo)
+     ↓
+multisig → Axelar 네트워크 (Memo 해석)
+     ↓
+Axelar ITS → Ethereum (토큰화된 XRP 전달)
+```
+
+### 💡 실전 예시
+
+```bash
+# Axelar 공식 문서의 실제 명령어 예시
+ts-node xrpl/interchain-transfer.js -e devnet-amplifier -n xrpl XRP 1 xrpl-evm-sidechain 0x0A90c0Af1B07f6AC34f3520348Dbfae73BDa358E --gasFeeAmount 0
+```
+
+위 명령어는 XRPL에서 1 XRP를 EVM 사이드체인 주소로 전송하는 예시입니다. 실제로는 Payment 트랜잭션의 Memo에 크로스체인 정보가 담깁니다.
+
+## 🚨 주의사항
+
+- 이 프로젝트는 **테스트넷**용으로 설계되었습니다
+- 실제 자금을 사용하기 전에 충분한 테스트를 진행하세요
+- 개인키는 절대 공개하지 마세요
+- 환경 변수 파일(.env)을 .gitignore에 추가하세요
+
+## 🐛 문제 해결
+
+### 일반적인 오류
+
+1. **TypeScript 컴파일 오류**
+   ```bash
+   npm install @types/node
+   ```
+
+2. **XRPL 연결 실패**
+   - 네트워크 연결 확인
+   - XRPL 테스트넷 상태 확인
+
+3. **Ethereum RPC 오류**
+   - Infura/Alchemy API 키 확인
+   - 네트워크 설정 확인
+
+### 로그 확인
+
+각 단계별로 상세한 로그가 출력됩니다. 오류 발생 시 해당 단계의 로그를 확인하세요.
+
+## 📞 지원
+
+문제가 발생하거나 질문이 있으시면:
+
+1. GitHub Issues에 문제를 등록하세요
+2. 로그 파일을 첨부해주세요
+3. 사용한 명령어와 환경 정보를 포함해주세요
+
+## 📄 라이선스
+
+이 프로젝트는 MIT 라이선스 하에 배포됩니다.
+
+---
+
+**⚠️**: 이 프로젝트는 테스트 목적으로 제작되었습니다. 
+
+## 단계별 핵심 로직 요약
+
+### [Step 1] XRPL 연결 및 지갑 로드
+**핵심 로직:**
+- XRPL 테스트넷에 연결하고 Admin/User 지갑을 로드합니다.
+- 파일: `step1_xrpl_connection.ts`
+```ts
+// XRPL 네트워크 연결 및 지갑 로드
+await client.connect();
+this.adminWallet = Wallet.fromSeed(adminSeed);
+this.userWallet = Wallet.fromSeed(userSeed);
+```
+
+---
+
+### [Step 2] 잔액 확인
+**핵심 로직:**
+- Admin과 User의 XRP 잔액을 확인합니다.
+- 파일: `step2_balance_check.ts`
+```ts
+// 잔액 확인
+const adminBalance = await client.getXrpBalance(adminWallet.address);
+const userBalance = await client.getXrpBalance(userWallet.address);
+```
+
+---
+
+### [Step 3] Admin → User XRP 발행
+**핵심 로직:**
+- Admin 지갑에서 User 지갑으로 XRP를 전송합니다.
+- 파일: `step3_admin_to_user_xrp_issue.ts`
+```ts
+// ⭐ 핵심: Admin에서 User로 XRP 발행 (XRPL 내부 전송)
+const paymentTx = {
+  TransactionType: 'Payment',
+  Account: this.adminWallet.address,      // 👑 Admin 지갑 (발행자)
+  Destination: this.userWallet.address,   // 👤 User 지갑 (수신자)
+  Amount: xrpl.xrplToDrops(amount)        // 💰 전송할 XRP 양 (drops 단위로 변환)
+}
+```
+이 코드는 Admin이 User에게 실제로 XRP를 지급하는 부분입니다.
+
+---
+
+### [Step 4] User → Axelar Gateway 전송
+**핵심 로직:**
+- User가 Axelar Gateway(multisig 계정)로 XRP를 전송하며, Memo 필드에 크로스체인 정보를 포함합니다.
+- 파일: `step4_user_to_gateway_payment.ts`
+
+**실제 트랜잭션 구조 (Axelar 공식 문서 기반):**
+>>>>>>> 6216f0dab24f220700564267e047585416368687
 ```json
 {
   "TransactionType": "Payment",
