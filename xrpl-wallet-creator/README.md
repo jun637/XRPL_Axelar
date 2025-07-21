@@ -102,7 +102,7 @@ console.log(`🔑 시드: ${newWallet.seed}`)
 * Wallet.fromSeed/fromSecret()은 특정 시드로부터 지갑을 생성합니다.
 * Wallet.generate()는 랜덤 시드로 새 지갑을 생성합니다.
 * Wallet.fromEntropy/fromMnemonic은 랜덤 바이트의 엔트로피/니모닉으로부터 생성합니다. 이 방법은 비권장합니다.
-* 위 코드에서는 하드코딩된 Seed를 이용, Wallet.fromSeed()를 통해해 admin의 지갑을, Wallet.generate()로 user의 지갑을 생성합니다. 
+* 위 코드에서는 하드코딩된 Seed를 Wallet.fromSeed()를 통해 불러와 admin의 지갑을, Wallet.generate()로 user의 지갑을 생성합니다. 
 
 ### 계정 활성화(Payment)
 - [XRPL Ledger : xrpl.js - Payment](https://xrpl.org/payment.html)
