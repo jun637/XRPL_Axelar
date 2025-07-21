@@ -1,22 +1,25 @@
-# XRPL ↔ Axelar 크로스체인 전송 시스템
+### XRPL ↔ Axelar 크로스체인 전송 시스템
 
 ## 목적
-XRPL(리플)에서 발행한 스테이블코인(XRP/IOU)을 Axelar Interchain Token Service(ITS)를 통해 이더리움 등 타 블록체인으로 안전하게 전송하는 과정을 실제 코드로 구현하고, 실전 개발에 참고할 수 있도록 문서화합니다.
+XRPL(XRP Ledger)에서 발행한 스테이블코인(IOU)을 Axelar Interchain Token Service(ITS)를 통해 이더리움 등 타 블록체인으로 안전하게 전송하는 과정을 실제 코드로 구현하고, 실전에 적용할 수 있도록 문서화
+
 
 ## 목차
 1. [기술 스택](#기술-스택)
-2. [전체 흐름](#전체-흐름)
-3. [설치 및 환경설정](#설치-및-환경설정)
-4. [단계별 핵심 코드 및 설명](#단계별-핵심-코드-및-설명)
+2. [핵심 용어](#핵심-용어)
+3. [전체 흐름](#전체-흐름)
+4. [설치 및 환경설정](#설치-및-환경설정)
+5. [XRPL 핵심 코드 및 설명](#XRPL-핵심-코드-및-설명)
     - [XRPL 연결 및 지갑 생성](#xrpl-연결-및-지갑-생성)
     - [계정 활성화(Payment)](#계정-활성화payment)
     - [TrustSet(신뢰설정)](#trustset신뢰설정)
     - [XRP/IOU 전송(Payment)](#xrpiou-전송payment)
-    - [크로스체인 전송(Memo)](#크로스체인-전송memo)
-5. [참고 자료/공식 문서](#참고-자료공식-문서)
-6. [주의사항](#주의사항)
-7. [라이선스](#라이선스)
-
+6. [Axelar 핵심 코드 및 설명](#Axelar-핵심-코드-및-설명)
+    - [크로스체인 전송 관련 트랜잭션](#크로스체인-전송-관련-트랜잭션)
+7. [참고 자료/공식 문서](#참고-자료공식-문서)
+8. [주의사항](#주의사항)
+9. [라이선스](#라이선스)
+---
 ## 기술 스택
 - **Blockchain**: XRPL, Ethereum, Axelar
 - **Language**: TypeScript
@@ -25,41 +28,62 @@ XRPL(리플)에서 발행한 스테이블코인(XRP/IOU)을 Axelar Interchain To
   - [`ethers`](https://docs.ethers.org/): Ethereum 인터페이스
   - [`@axelar-network/axelarjs-sdk`](https://docs.axelar.dev/dev/axelarjs-sdk): Axelar SDK
   - [`@axelar-network/interchain-token-service`](https://docs.axelar.dev/dev/interchain-token-service): ITS 서비스
+---
+## 핵심 용어
+**1. **XRPL**** - 리플의 퍼블릭 블록체인 네트워크
 
-<<<<<<< HEAD
+**2. **XRP**** - XRPL의 네이티브 토큰, 계정 활성화/수수료에 사용
+
+**3. IOU** -XRPL에서 발행자가 발행하는 토큰(예: USD, USDT 등) 
+
+**4. Trustset** - IOU 토큰 수신을 위한 신뢰 한도(Trustline) 설정 트랜잭션, XRPL의 네이티브 토큰인 XRP를 주고받는 데는 Trustset이 필요 없음.
+
+**5. Payment** - 자산(XRP/IOU) 전송용 XRPL 트랜잭션,
+
+**6. Memo** - 트랜잭션에 부가 정보를 담는 필드, 크로스체인 메타데이터 전달에 사용
+
+**7. Multisig Account** - 여러 명이 서명해야 트랜잭션 실행되는 XRPL 계정, Axelar Gateway 역할
+
+**8. Axelar Gateway** - XRPL과 타 체인(EVM 등) 간 크로스체인 전송 중계, XRPL에서는 multisig
+
+**9. ITS** - Axelar의 크로스체인 토큰화 서비스
+
+**10. GMP** - Axelar의 크로스체인 메시지/컨트랙트 호출 프로토콜
+
+**11. Drops** - XRP의 최소 단위(1 XRP = 1,000,000 drops)
+
+**12. EVM** - Ethereum Virtual Machine, 이더리움 및 호환 네트워크
+
+---
 ## 전체 흐름
 ```
-1. Admin이 XRPL에서 User에게 XRP(또는 IOU) 발행
-2. User가 Axelar Gateway(multisig)로 Payment + Memo 전송
-3. Axelar 네트워크가 Memo 해석, ITS를 통해 타 체인으로 토큰화
-4. 목적지 체인(Ethereum 등)에서 User가 토큰 수령
-=======
-## 💻 XRPL 핵심 트랜잭션 코드
 
-### 🔌 XRPL 연결 및 기본 설정
-
-```typescript
-import { Client, Wallet } from 'xrpl'
-
-// XRPL 클라이언트 초기화
-const client = new Client('wss://s.altnet.rippletest.net:51233')
-await client.connect()
-
-// 기존 지갑 로드(admin용)
-const adminWallet = Wallet.fromSeed('sEdThoRiyqRs7jZaBvYoL2ePXfQc5A6')
->>>>>>> 6216f0dab24f220700564267e047585416368687
+1. XRPL 연결: XRPL 테스트넷에 연결하고 Admin/User 지갑 로드
+2. 잔액 확인: Admin과 User 계정의 XRP 잔액 확인
+3. Admin → User IOU(XRP) 발행: 관리자가 사용자에게 IOU(XRP) 전송, // 실제로 XRP가 아닌 IOU라면 이 과정 전에 trustset 필요
+4. User → Axelar Gateway 전송: 사용자가 Axelar Gateway로 IOU(XRP) 전송 (크로스체인 정보 포함)
+5. ITS 토큰 등록 확인 및 크로스체인 전송: ITS에서 해당 IOU 토큰 등록 상태 확인 후 크로스체인 전송
+6. GMP 메시지 전송: General Message Passing 메시지 전송
+7. ITS 컨트랙트 실행: 목적지 체인에서 ITS 컨트랙트 실행
+8. 최종 확인: 전체 전송 과정 검증 및 완료
 ```
-
+---
 ## 설치 및 환경설정
 ```bash
 npm install
+npm install ethers @axelar-network/axelarjs-sdk @axelar-network/interchain-token-service
+# (TypeScript 개발 시)
+npm install --save-dev typescript ts-node @types/node
 cp .env.example .env # 환경변수 파일 생성 후 값 입력
 ```
 
-## 단계별 핵심 코드 및 설명
+* 환경변수(.env 파일) : 테스트용 지갑 시드, XRPL,Axelar,Ethereum 등 사용 네트워크의 RPC 및 프라이빗 키 등
+---
+
+## XRPL 핵심 코드 및 설명
 
 ### XRPL 연결 및 지갑 생성
-- [XRPL 공식 문서: JS 라이브러리](https://js.xrpl.org/)
+- [XRPL Ledger : xrpl.js - Wallet](https://js.xrpl.org/classes/Wallet.html)
 ```typescript
 <<<<<<< HEAD
 import { Client, Wallet } from 'xrpl'
@@ -74,9 +98,14 @@ const newWallet = Wallet.generate()
 console.log(`📍 주소: ${newWallet.address}`)
 console.log(`🔑 시드: ${newWallet.seed}`)
 ```
+* XRPL의 Wallet 클래스는 키쌍(PublicKey/PrivateKey)로 구성된 지갑을 생성 또는 복원하는 유틸리티입니다.
+* Wallet.fromSeed/fromSecret()은 특정 시드로부터 지갑을 생성합니다.
+* Wallet.generate()는 랜덤 시드로 새 지갑을 생성합니다.
+* Wallet.fromEntropy/fromMnemonic은 랜덤 바이트의 엔트로피/니모닉으로부터 생성합니다. 이 방법은 비권장합니다.
+* 위 코드에서는 하드코딩된 Seed를 Wallet.fromSeed()를 통해 불러와 admin의 지갑을, Wallet.generate()로 user의 지갑을 생성합니다. 
 
 ### 계정 활성화(Payment)
-- [XRPL 공식 Payment 트랜잭션](https://xrpl.org/payment.html)
+- [XRPL Ledger : xrpl.js - Payment](https://xrpl.org/payment.html)
 ```typescript
 const fundTx = {
   TransactionType: 'Payment',
@@ -92,9 +121,12 @@ if (result.result.meta?.TransactionResult === 'tesSUCCESS') {
   console.log('✅ 계정 활성화 완료')
 }
 ```
+* 네트워크에 생성된 지갑이 활성화되려면 계정 활성화를 위한 트랜잭션을 제출해야 합니다.
+* 실제로 XRPL 네트워크에 계정(지갑)이 등록되는 것은 위 Payment 트랜잭션(계정 활성화)를 통해서입니다.
+* 이 때 base reserve로 최소 10XRP(테스트넷의 경우 20XRP)를 전송해야 계정이 활성화됩니다. 
 
 ### TrustSet(신뢰설정)
-- [XRPL 공식 TrustSet 트랜잭션](https://xrpl.org/trustset.html)
+- [XRPL Ledger : xrpl.js - Trustset](https://xrpl.org/trustset.html)
 ```typescript
 const trustSetTx = {
   TransactionType: 'TrustSet',
@@ -114,7 +146,10 @@ if (result.result.meta?.TransactionResult === 'tesSUCCESS') {
   console.log('✅ TrustLine 설정 완료')
 }
 ```
-
+* XRPL에서는 XRPL의 네이티브 토큰인 XRP를 제외한 IOU(토큰)를 받으려면, 해당 IOU의 issuer에 대해 trustline을 먼저 설정해야 합니다.
+* 받는 쪽(수신자)이 반드시 해당 issuer에 대해 trustline을 먼저 설정해야 그 토큰을 받을 수 있습니다.
+* 위 코드는 XRPL에서 Trustline을 설정하기 위한 TrustSet 트랜잭션 객체 예시시입니다.
+  
 ### XRP/IOU 전송(Payment)
 - [XRPL 공식 Payment 트랜잭션](https://xrpl.org/payment.html)
 ```typescript
@@ -141,59 +176,92 @@ const iouPaymentTx = {
   Fee: '12'
 }
 ```
+* 각각 XRP와 IOU를 전송하는 트랜잭션 객체입니다.
+* XRP 전송 Payment 트랜잭션에서는 Amount - 문자열, trustline - 필요 없음
+* IOU(토큰) 전송 Payment 트랜잭션에서는 Amount - 객체(currency, issuer, value), trustline - 필요
+---
+## Axelar 핵심 코드 및 설명
 
-<<<<<<< HEAD
-### 크로스체인 전송(Memo)
-- [Axelar 공식 문서: XRPL ↔ EVM](https://docs.axelar.dev/dev/xrpl)
-=======
-### ⚙️ 계정 설정 트랜잭션
-
-```typescript
-// AccountSet 트랜잭션 (계정 속성 설정)
-const accountSetTx = {
-  TransactionType: 'AccountSet',
+### 크로스체인 전송 관련 트랜잭션
+- [Axelar 공식 문서: XRPL-ITS](https://docs.axelar.dev/dev/send-tokens/xrpl/xrpl-its/)
+```
+const crossChainTx = {
+  TransactionType: "Payment",
   Account: userWallet.address,
-  Domain: '736F6D65646F6D61696E2E636F6D', // hex("somedomain.com")
-  EmailHash: 'F939A06C3C4B3C4B3C4B3C4B3C4B3C4B3C4B3C4B', // 이메일 해시
-  MessageKey: '03AB40A0490F9B7ED8DF29D246BF2D6269820A0EE7742ACDD457BEA7C7D0931EDB', // 메시지 키
-  TransferRate: 0, // 전송 수수료율 (0 = 수수료 없음)
-  TickSize: 5, // 가격 틱 크기
-  Fee: '12'
-}
-
-const prepared = await client.autofill(accountSetTx)
-const signed = userWallet.sign(prepared)
-const result = await client.submitAndWait(signed.tx_blob)
-
-if (result.result.meta?.TransactionResult === 'tesSUCCESS') {
-  console.log('✅ AccountSet 설정 완료')
+  Amount: "1000000", // (1 XRP), XRP를 보내는 경우 Amount는 문자열
+  // Amount: { // alternatively, an IOU token amount can be used to cover gas fees
+  //   currency: "ABC", // IOU의 currency code
+  //   issuer: "r4DVHyEisbgQRAXCiMtP2xuz5h3dDkwqf1", // IOU issuer의 XRPL 주소
+  //   value: "1" // 브릿지할 IOU 수량 (이 예시에서는 1 ABC.r4DVH, 가스비 포함)
+  // },
+  Destination: gateway.address, // Axelar Gateway XRPL 주소
+  Memos: [
+    {
+      Memo: {
+        MemoType: "74797065", // hex("type")
+        MemoData: "696e746572636861696e5f7472616e73666572" // hex("interchain_transfer")
+      },
+    },
+    {
+      Memo: {
+        MemoType: "64657374696e6174696f6e5f61646472657373", // hex("destination_address")
+        MemoData: "30413930633041663142303766364143333466333532303334384462666165373342446133353845" // hex("0A90c0Af1B07f6AC34f3520348Dbfae73BDa358E"), 0x 없이
+      },
+    },
+    {
+      Memo: {
+        MemoType: "64657374696E6174696F6E5F636861696E", // hex("destination_chain")
+        MemoData: "7872706c2d65766d2d6465766e6574", // hex("xrpl-evm-devnet")
+      },
+    },
+    {
+      Memo: {
+        MemoType: "6761735f6665655f616d6f756e74", // hex("gas_fee_amount")
+        MemoData: "30", // 가스비
+      },
+    },
+    { // GMP 호출 시에만 포함
+      Memo: {
+        MemoType: "7061796c6f6164", // hex("payload")
+        // abi-encoded payload/data with which to call the Executable destination contract address:
+        MemoData: "0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000e474d5020776f726b7320746f6f3f000000000000000000000000000000000000",
+      },
+    },
+  ],
 }
 ```
+* XRPL에서 Axelar ITS를 이용해 IOU를 다른 체인(Etherium, Polygon 등)으로 보내려면 먼저 Axelar gateway로 특정한 형식의 Payment 트랜잭션을 전송해야 합니다.
+* 위 코드는 해당 트랜잭션 형식으로, 기존 XRPL Payment 트랜잭션의 Memo필드에 추가 정보(목적지 체인 주소, 체인명, 가스비 등)를 hex 인코딩하여 전송합니다. 
+- 다음은 위의 트랜잭션 구조를 기반으로, xrpl.js 라이브러리로 실제로 트랜잭션을 만들어 전송하는 함수입니다.
 
+```ts
 
-
-## 📊 전송 과정
-
-1. **XRPL 연결**: XRPL 테스트넷에 연결하고 Admin/User 지갑 로드
-2. **잔액 확인**: Admin과 User 계정의 XRP 잔액 확인
-3. **Admin → User XRP 발행**: 관리자가 사용자에게 XRP 전송
-4. **User → Axelar Gateway 전송**: 사용자가 Axelar Gateway로 XRP 전송 (크로스체인 정보 포함)
-5. **ITS 토큰 등록 확인 및 크로스체인 전송**: ITS에서 XRP 토큰 등록 상태 확인 후 크로스체인 전송
-6. **GMP 메시지 전송**: General Message Passing 메시지 전송
-7. **ITS 컨트랙트 실행**: 목적지 체인에서 ITS 컨트랙트 실행
-8. **최종 확인**: 전체 전송 과정 검증 및 완료
+await interchainTransfer({
+  client,
+  userWallet,
+  gatewayAddress: 'rMultisigGatewayAddress',
+  amount: '1000000',
+  destinationEvmAddress: '30413930633041663142303766364143333466333532303334384462666165373342446133353845', // 0x 없이 hex
+  destinationChain: 'xrpl-evm-devnet',
+  gasFeeAmount: '30',
+  // payloadHex: '...' // GMP 호출 시에만
+})
+```
+---
 
 ## 🔄 전송 흐름
 
 ```
-Admin 지갑 → User 지갑 (XRP 발행)
+Admin 지갑 → User 지갑 (XRP 발행) - Payment 트랜잭션
      ↓
-User 지갑 → Axelar multisig (Payment + Memo)
+User 지갑 → Axelar Gateway(실제로는 XRPL multisig) - Payment + memo 형식의 크로스체인 트랜잭션 
      ↓
-multisig → Axelar 네트워크 (Memo 해석)
+Axelar Gateway → Axelar 네트워크 (Memo 해석)
      ↓
 Axelar ITS → Ethereum (토큰화된 XRP 전달)
 ```
+
+**실제 전송 과정에서는 5~7의 단계는 Axelar ITS 내 Amplifier 노드가 자동 수행**
 
 ### 💡 실전 예시
 
@@ -203,50 +271,6 @@ ts-node xrpl/interchain-transfer.js -e devnet-amplifier -n xrpl XRP 1 xrpl-evm-s
 ```
 
 위 명령어는 XRPL에서 1 XRP를 EVM 사이드체인 주소로 전송하는 예시입니다. 실제로는 Payment 트랜잭션의 Memo에 크로스체인 정보가 담깁니다.
-
-## 🚨 주의사항
-
-- 이 프로젝트는 **테스트넷**용으로 설계되었습니다
-- 실제 자금을 사용하기 전에 충분한 테스트를 진행하세요
-- 개인키는 절대 공개하지 마세요
-- 환경 변수 파일(.env)을 .gitignore에 추가하세요
-
-## 🐛 문제 해결
-
-### 일반적인 오류
-
-1. **TypeScript 컴파일 오류**
-   ```bash
-   npm install @types/node
-   ```
-
-2. **XRPL 연결 실패**
-   - 네트워크 연결 확인
-   - XRPL 테스트넷 상태 확인
-
-3. **Ethereum RPC 오류**
-   - Infura/Alchemy API 키 확인
-   - 네트워크 설정 확인
-
-### 로그 확인
-
-각 단계별로 상세한 로그가 출력됩니다. 오류 발생 시 해당 단계의 로그를 확인하세요.
-
-## 📞 지원
-
-문제가 발생하거나 질문이 있으시면:
-
-1. GitHub Issues에 문제를 등록하세요
-2. 로그 파일을 첨부해주세요
-3. 사용한 명령어와 환경 정보를 포함해주세요
-
-## 📄 라이선스
-
-이 프로젝트는 MIT 라이선스 하에 배포됩니다.
-
----
-
-**⚠️**: 이 프로젝트는 테스트 목적으로 제작되었습니다. 
 
 ## 단계별 핵심 로직 요약
 
@@ -258,7 +282,7 @@ ts-node xrpl/interchain-transfer.js -e devnet-amplifier -n xrpl XRP 1 xrpl-evm-s
 // XRPL 네트워크 연결 및 지갑 로드
 await client.connect();
 this.adminWallet = Wallet.fromSeed(adminSeed);
-this.userWallet = Wallet.fromSeed(userSeed);
+this.userWallet = Wallet.generate();
 ```
 
 ---
@@ -298,7 +322,7 @@ const paymentTx = {
 - 파일: `step4_user_to_gateway_payment.ts`
 
 **실제 트랜잭션 구조 (Axelar 공식 문서 기반):**
->>>>>>> 6216f0dab24f220700564267e047585416368687
+[ITS Interchain transfer](https://github.com/axelarnetwork/axelar-contract-deployments/blob/main/xrpl/interchain-transfer.js)
 ```json
 {
   "TransactionType": "Payment",
@@ -313,18 +337,47 @@ const paymentTx = {
   ]
 }
 ```
+* [크로스체인 전송 관련 트랜잭션](#크로스체인-전송-관련-트랜잭션)의 ITS 트랜잭션과 달라 보이지만, Memo의 형태만 축소되었을 뿐 실제로는 같은 형식의 트랜잭션 객체입니다. 
+* Amount : "1000000"인 것으로 보아 XRP를 전송하는 것임을 알 수 있습니다.
 
+---
 ## 참고 자료/공식 문서
 - [XRPL 공식 JS 라이브러리](https://js.xrpl.org/)
 - [XRPL Payment 트랜잭션](https://xrpl.org/payment.html)
 - [XRPL TrustSet 트랜잭션](https://xrpl.org/trustset.html)
 - [Axelar 공식 문서: XRPL ↔ EVM](https://docs.axelar.dev/dev/xrpl)
 
-## 주의사항
-- 이 프로젝트는 **테스트넷**용으로 설계되었습니다.
-- 실제 자금을 사용하기 전에 충분한 테스트를 진행하세요.
-- 개인키는 절대 공개하지 마세요.
-- 환경 변수 파일(.env)을 .gitignore에 추가하세요.
+## 🐛 문제 해결
 
-## 라이선스
-이 프로젝트는 MIT 라이선스 하에 배포됩니다. 
+### 일반적인 오류
+
+1. **TypeScript 컴파일 오류**
+   ```bash
+   npm install @types/node
+   ```
+
+2. **XRPL 연결 실패**
+   - 네트워크 연결 확인
+   - XRPL 테스트넷 상태 확인
+
+3. **Ethereum RPC 오류**
+   - Infura/Alchemy API 키 확인
+   - 네트워크 설정 확인
+
+ 
+
+## 📞 지원
+
+문제가 발생하거나 질문이 있으시면:
+
+1. GitHub Issues에 문제를 등록하세요
+2. 로그 파일을 첨부해주세요
+3. 사용한 명령어와 환경 정보를 포함해주세요
+
+## 📄 라이선스
+
+이 프로젝트는 MIT 라이선스 하에 배포됩니다.
+
+---
+
+**⚠️**: 이 프로젝트는 테스트 목적으로 제작되었습니다. 
