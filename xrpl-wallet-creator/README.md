@@ -60,7 +60,7 @@ XRPL(XRP Ledger)에서 발행한 스테이블코인(IOU)을 Axelar Interchain To
 
 1. **XRPL 연결**: XRPL 테스트넷에 연결하고 Admin/User 지갑 로드
 2. **잔액 확인**: Admin과 User 계정의 XRP 잔액 확인
-3. **Admin → User XRP 발행**: 관리자가 사용자에게 XRP 전송
+3. **Admin → User IOU(XRP) 발행**: 관리자가 사용자에게 XRP 전송
 4. **User → Axelar Gateway 전송**: 사용자가 Axelar Gateway로 XRP 전송 (크로스체인 정보 포함)
 5. **ITS 토큰 등록 확인 및 크로스체인 전송**: ITS에서 XRP 토큰 등록 상태 확인 후 크로스체인 전송
 6. **GMP 메시지 전송**: General Message Passing 메시지 전송
