@@ -99,11 +99,10 @@ console.log(`📍 주소: ${newWallet.address}`)
 console.log(`🔑 시드: ${newWallet.seed}`)
 ```
 * XRPL의 Wallet 클래스는 키쌍(PublicKey/PrivateKey)로 구성된 지갑을 생성 또는 복원하는 유틸리티입니다.
-* wallet.generate()는 랜덤 시드로 새 지갑을 생성합니다.
 * Wallet.fromSeed/fromSecret()은 특정 시드로부터 지갑을 생성합니다.
+* Wallet.generate()는 랜덤 시드로 새 지갑을 생성합니다.
 * Wallet.fromEntropy/fromMnemonic은 랜덤 바이트의 엔트로피/니모닉으로부터 생성합니다. 이 방법은 비권장합니다.
-* 이 지갑이 활성화되려면 계정 활성화를 위한 트랜잭션을 제출해야 합니다.
-* 위 코드에서는 하드코딩된 Seed를 이용, Wallet.fromSeed()를 이용해 admin의 지갑을, Wallet.generate()로 user의 지갑을 생성합니다. 
+* 위 코드에서는 하드코딩된 Seed를 이용, Wallet.fromSeed()를 통해해 admin의 지갑을, Wallet.generate()로 user의 지갑을 생성합니다. 
 
 ### 계정 활성화(Payment)
 - [XRPL Ledger : xrpl.js - Payment](https://xrpl.org/payment.html)
@@ -122,6 +121,7 @@ if (result.result.meta?.TransactionResult === 'tesSUCCESS') {
   console.log('✅ 계정 활성화 완료')
 }
 ```
+* 네트워크에 생성된 지갑이 활성화되려면 계정 활성화를 위한 트랜잭션을 제출해야 합니다.
 * 실제로 XRPL 네트워크에 계정(지갑)이 등록되는 것은 위 Payment 트랜잭션(계정 활성화)를 통해서입니다.
 * 이 때 base reserve로 최소 10XRP(테스트넷의 경우 20XRP)를 전송해야 계정이 활성화됩니다. 
 
@@ -338,7 +338,10 @@ const paymentTx = {
   ]
 }
 ```
+* [### 크로스체인 전송 관련 트랜잭션(Memo)]의 ITS 트랜잭션과 달라 보이지만, Memo의 형태만 축소되었을 뿐 실제로는 같은 형식의 트랜잭션 객체입니다. 
+* Amount : "1000000"인 것으로 보아 XRP를 전송하는 것임을 알 수 있습니다.
 
+---
 ## 참고 자료/공식 문서
 - [XRPL 공식 JS 라이브러리](https://js.xrpl.org/)
 - [XRPL Payment 트랜잭션](https://xrpl.org/payment.html)
