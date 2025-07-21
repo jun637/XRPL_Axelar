@@ -15,7 +15,7 @@ XRPL(XRP Ledger)에서 발행한 스테이블코인(IOU)을 Axelar Interchain To
     - [TrustSet(신뢰설정)](#trustset신뢰설정)
     - [XRP/IOU 전송(Payment)](#xrpiou-전송payment)
 6. [Axelar 핵심 코드 및 설명](#Axelar-핵심-코드-및-설명)
-    - [크로스체인 전송 관련 트랜잭션션](#크로스체인-전송-관련-트랜잭션)
+    - [크로스체인 전송 관련 트랜잭션](#크로스체인-전송-관련-트랜잭션)
 7. [참고 자료/공식 문서](#참고-자료공식-문서)
 8. [주의사항](#주의사항)
 9. [라이선스](#라이선스)
@@ -184,7 +184,6 @@ const iouPaymentTx = {
 
 ### 크로스체인 전송 관련 트랜잭션
 - [Axelar 공식 문서: XRPL-ITS](https://docs.axelar.dev/dev/send-tokens/xrpl/xrpl-its/)
-- 크로스체인 전송 트랜잭션의 json 형식입니다. (Axelar 공식 문서 기반)
 ```
 const crossChainTx = {
   TransactionType: "Payment",
