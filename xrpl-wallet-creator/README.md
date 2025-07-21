@@ -175,7 +175,6 @@ const iouPaymentTx = {
 * 각각 XRP와 IOU를 전송하는 트랜잭션 객체입니다.
 * XRP 전송 Payment 트랜잭션에서는 Amount - 문자열, trustline - 필요 없음
 * IOU(토큰) 전송 Payment 트랜잭션에서는 Amount - 객체(currency, issuer, value), trustline - 필요
-* https://livenet.xrpl.org/에서  
 ---
 ## Axelar 핵심 코드 및 설명
 
