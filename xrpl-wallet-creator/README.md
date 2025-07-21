@@ -140,8 +140,8 @@ npm run step8
 xrpl-wallet-creator/
 ├── step1_xrpl_connection.ts          # XRPL 연결 및 지갑 로드
 ├── step2_balance_check.ts            # Admin/User 잔액 확인
-├── step3_xrpl_to_axelar.ts           # Admin → User XRP 발행
-├── step4_axelar_gateway_processing.ts # User → Axelar Gateway 전송
+├── step3_admin_to_user_xrp_issue.ts  # Admin → User XRP 발행
+├── step4_user_to_gateway_payment.ts  # User → Axelar Gateway 전송
 ├── step5_its_cross_chain_transfer.ts # ITS 토큰 등록 확인 및 크로스체인 전송
 ├── step6_gmp_message_transmission.ts # GMP 메시지 전송
 ├── step7_its_contract_execution.ts   # ITS 컨트랙트 실행
@@ -268,7 +268,7 @@ const userBalance = await client.getXrpBalance(userWallet.address);
 ### [Step 3] Admin → User XRP 발행
 **핵심 로직:**
 - Admin 지갑에서 User 지갑으로 XRP를 전송합니다.
-- 파일: `step3_xrpl_to_axelar.ts`
+- 파일: `step3_admin_to_user_xrp_issue.ts`
 ```ts
 // ⭐ 핵심: Admin에서 User로 XRP 발행 (XRPL 내부 전송)
 const paymentTx = {
@@ -285,7 +285,7 @@ const paymentTx = {
 ### [Step 4] User → Axelar Gateway 전송
 **핵심 로직:**
 - User가 Axelar Gateway(multisig 계정)로 XRP를 전송하며, Memo 필드에 크로스체인 정보를 포함합니다.
-- 파일: `step4_axelar_gateway_processing.ts`
+- 파일: `step4_user_to_gateway_payment.ts`
 
 **실제 트랜잭션 구조 (Axelar 공식 문서 기반):**
 ```json
