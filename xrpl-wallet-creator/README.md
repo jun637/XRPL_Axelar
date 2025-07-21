@@ -233,7 +233,7 @@ const crossChainTx = {
 }
 ```
 * XRPL에서 Axelar ITS를 이용해 IOU를 다른 체인(Etherium, Polygon 등)으로 보내려면 먼저 Axelar gateway로 특정한 형식의 Payment 트랜잭션을 전송해야 합니다.
-* 위 코드는 해당 트랜잭션 형식으로, 기존 XRPL Payment 트랜잭션의 Memo필드에 추가 정보(목적지 체인 주소, 체인명, 가스비 등)를 hex 인코딩하여 전송합니다. 
+* 위 코드는 해당 트랜잭션 형식으로, 기존 XRPL Payment 트랜잭션의 Memo필드에 추가 정보(목적지 체인 주소, 체인명, 가스비 등)를 hex 인코딩하여 입력 후 전송합니다. 
 - 다음은 위의 트랜잭션 구조를 기반으로, xrpl.js 라이브러리로 실제로 트랜잭션을 만들어 전송하는 함수입니다.
 
 ```ts
