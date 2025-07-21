@@ -83,7 +83,7 @@ cp .env.example .env # 환경변수 파일 생성 후 값 입력
 ## XRPL 핵심 코드 및 설명
 
 ### XRPL 연결 및 지갑 생성
-- [XRPL 공식 문서: JS 라이브러리 - 지갑 생성](https://js.xrpl.org/classes/Wallet.html)
+- [XRPL Ledger : xrpl.js - Wallet](https://js.xrpl.org/classes/Wallet.html)
 ```typescript
 <<<<<<< HEAD
 import { Client, Wallet } from 'xrpl'
@@ -106,7 +106,7 @@ console.log(`🔑 시드: ${newWallet.seed}`)
 * 위 코드에서는 하드코딩된 Seed를 이용, Wallet.fromSeed()를 이용해 admin의 지갑을, Wallet.generate()로 user의 지갑을 생성합니다. 
 
 ### 계정 활성화(Payment)
-- [XRPL 공식 Payment 트랜잭션](https://xrpl.org/payment.html)
+- [XRPL Ledger : xrpl.js - Payment](https://xrpl.org/payment.html)
 ```typescript
 const fundTx = {
   TransactionType: 'Payment',
@@ -126,7 +126,7 @@ if (result.result.meta?.TransactionResult === 'tesSUCCESS') {
 * 이 때 base reserve로 최소 10XRP(테스트넷의 경우 20XRP)를 전송해야 계정이 활성화됩니다. 
 
 ### TrustSet(신뢰설정)
-- [XRPL 공식 TrustSet 트랜잭션](https://xrpl.org/trustset.html)
+- [XRPL Ledger : xrpl.js - Trustset](https://xrpl.org/trustset.html)
 ```typescript
 const trustSetTx = {
   TransactionType: 'TrustSet',
