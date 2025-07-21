@@ -1,7 +1,7 @@
 # XRPL ↔ Axelar 크로스체인 전송 시스템
 
 ## 목적
-XRPL(리플)에서 발행한 스테이블코인(XRP/IOU)을 Axelar Interchain Token Service(ITS)를 통해 이더리움 등 타 블록체인으로 안전하게 전송하는 과정을 실제 코드로 구현하고, 실전 개발에 참고할 수 있도록 문서화합니다. 
+XRPL(XRP Ledger)에서 발행한 스테이블코인(IOU)을 Axelar Interchain Token Service(ITS)를 통해 이더리움 등 타 블록체인으로 안전하게 전송하는 과정을 실제 코드로 구현하고, 실전에 적용할 수 있도록 문서화
 
 ## 목차
 1. [기술 스택](#기술-스택)
@@ -25,6 +25,19 @@ XRPL(리플)에서 발행한 스테이블코인(XRP/IOU)을 Axelar Interchain To
   - [`ethers`](https://docs.ethers.org/): Ethereum 인터페이스
   - [`@axelar-network/axelarjs-sdk`](https://docs.axelar.dev/dev/axelarjs-sdk): Axelar SDK
   - [`@axelar-network/interchain-token-service`](https://docs.axelar.dev/dev/interchain-token-service): ITS 서비스
+## 핵심 용어
+1. XRPL - 리플의 퍼블릭 블록체인 네트워크
+2. XRP - XRPL의 네이티브 토큰, 계정 활성화/수수료에 사용
+3. IOU -XRPL에서 발행자가 발행하는 토큰(예: USD, USDT 등)
+4. TrustLine - IOU 토큰 수신을 위한 신뢰 한도 설정 트랜잭션
+5. Payment - 자산(XRP/IOU) 전송용 XRPL 트랜잭션
+6. Memo - 트랜잭션에 부가 정보를 담는 필드, 크로스체인 메타데이터 전달에 사용
+7. Multisig Account - 여러 명이 서명해야 트랜잭션 실행되는 XRPL 계정, Axelar Gateway 역할
+8. Axelar Gateway - XRPL과 타 체인(EVM 등) 간 크로스체인 전송 중계, XRPL에서는 multisig
+9. ITS - Axelar의 크로스체인 토큰화 서비스
+10. GMP - Axelar의 크로스체인 메시지/컨트랙트 호출 프로토콜
+11. Drops - XRP의 최소 단위(1 XRP = 1,000,000 drops)
+12. EVM - Ethereum Virtual Machine, 이더리움 및 호환 네트워크
 
 ## 전체 흐름
 ```
@@ -181,14 +194,17 @@ if (result.result.meta?.TransactionResult === 'tesSUCCESS') {
 7. **ITS 컨트랙트 실행**: 목적지 체인에서 ITS 컨트랙트 실행
 8. **최종 확인**: 전체 전송 과정 검증 및 완료
 
+**ITS(Interchain Token Service):**
+**실제 전송 과정에서는 5~7의 단계는 Axelar ITS 내 Amplifier 노드가 자동 수행**
+
 ## 🔄 전송 흐름
 
 ```
-Admin 지갑 → User 지갑 (XRP 발행)
+Admin 지갑 → User 지갑 (XRP 발행) - Payment 트랜잭션
      ↓
-User 지갑 → Axelar multisig (Payment + Memo)
+User 지갑 → Axelar Gateway(실제로는 XRPL multisig) - Payment + memo 형식의 크로스체인 트랜잭션 
      ↓
-multisig → Axelar 네트워크 (Memo 해석)
+Axelar Gateway → Axelar 네트워크 (Memo 해석)
      ↓
 Axelar ITS → Ethereum (토큰화된 XRP 전달)
 ```
