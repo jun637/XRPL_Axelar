@@ -53,6 +53,7 @@ XRPL(XRP Ledger)에서 발행한 스테이블코인(IOU)을 Axelar Interchain To
 **11. Drops** - XRP의 최소 단위(1 XRP = 1,000,000 drops)
 
 **12. EVM** - Ethereum Virtual Machine, 이더리움 및 호환 네트워크
+
 ---
 ## 전체 흐름
 ```
