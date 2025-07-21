@@ -98,8 +98,12 @@ const newWallet = Wallet.generate()
 console.log(`📍 주소: ${newWallet.address}`)
 console.log(`🔑 시드: ${newWallet.seed}`)
 ```
-* XRPL에서는 Wallet.generete()로 오프라인에서 키쌍(지갑) 생성을 합니다. 다만 이 지갑이 활성화되려면 계정 활성화를 위한 트랜잭션을 제출해야 합니다.
-* 위 코드에서는 하드코딩된 admin 지갑주소(XRPL에 기존 연결되어 있음)를 로드하고, Wallet.generate()로 user의 지갑을 생성합니다. 
+* XRPL의 Wallet 클래스는 키쌍(PublicKey/PrivateKey)로 구성된 지갑을 생성 또는 복원하는 유틸리티입니다.
+* wallet.generate()는 랜덤 시드로 새 지갑을 생성합니다.
+* Wallet.fromSeed/fromSecret()은 특정 시드로부터 지갑을 생성합니다.
+* Wallet.fromEntropy/fromMnemonic은 랜덤 바이트의 엔트로피/니모닉으로부터 생성합니다. 이 방법은 비권장합니다.
+* 이 지갑이 활성화되려면 계정 활성화를 위한 트랜잭션을 제출해야 합니다.
+* 위 코드에서는 하드코딩된 Seed를 이용, Wallet.fromSeed()를 이용해 admin의 지갑을, Wallet.generate()로 user의 지갑을 생성합니다. 
 
 ### 계정 활성화(Payment)
 - [XRPL 공식 Payment 트랜잭션](https://xrpl.org/payment.html)
