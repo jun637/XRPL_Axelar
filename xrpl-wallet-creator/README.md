@@ -105,7 +105,8 @@ console.log(`🔑 시드: ${newWallet.seed}`)
 * 위 코드에서는 하드코딩된 Seed를 Wallet.fromSeed()를 통해 불러와 admin의 지갑을, Wallet.generate()로 user의 지갑을 생성합니다. 
 
 ### 계정 활성화(Payment)
-- [XRPL Ledger : xrpl.js - Payment](https://xrpl.org/payment.html)
+- [XRPL 공식 Payment 트랜잭션](https://xrpl.org/payment.html)
+- [XRPL Ledger : xrpl.js - Payment](https://js.xrpl.org/interfaces/Payment.html) 
 ```typescript
 const fundTx = {
   TransactionType: 'Payment',
@@ -152,6 +153,7 @@ if (result.result.meta?.TransactionResult === 'tesSUCCESS') {
   
 ### XRP/IOU 전송(Payment)
 - [XRPL 공식 Payment 트랜잭션](https://xrpl.org/payment.html)
+- [XRPL Ledger : xrpl.js - Payment](https://js.xrpl.org/interfaces/Payment.html) 
 ```typescript
 // 기존 지갑 로드(user용)
 const userWallet = Wallet.fromSeed('sEd7Su6LCR6xaA1aYd3cHrWi6U4nRWg')
