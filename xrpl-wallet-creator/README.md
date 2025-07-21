@@ -29,7 +29,7 @@ XRPL(XRP Ledger)에서 발행한 스테이블코인(IOU)을 Axelar Interchain To
 **1. **XRPL**** - 리플의 퍼블릭 블록체인 네트워크
 
 **2. **XRP**** - XRPL의 네이티브 토큰, 계정 활성화/수수료에 사용
-3. IOU -XRPL에서 발행자가 발행하는 토큰(예: USD, USDT 등)
+**3. IOU** -XRPL에서 발행자가 발행하는 토큰(예: USD, USDT 등)
 4. TrustLine - IOU 토큰 수신을 위한 신뢰 한도 설정 트랜잭션
 5. Payment - 자산(XRP/IOU) 전송용 XRPL 트랜잭션
 6. Memo - 트랜잭션에 부가 정보를 담는 필드, 크로스체인 메타데이터 전달에 사용
