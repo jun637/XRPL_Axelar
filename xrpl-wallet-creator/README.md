@@ -161,9 +161,8 @@ const iouPaymentTx = {
 
 ### 크로스체인 전송 관련 트랜잭션(Memo)
 - [Axelar 공식 문서: XRPL ITS](https://docs.axelar.dev/dev/send-tokens/xrpl/xrpl-its/)
-- 
-// 크로스체인 전송 트랜잭션 예시 (Axelar 공식 문서 기반)
-```ts
+- 크로스체인 전송 트랜잭션의 json 형식입니다. (Axelar 공식 문서 기반)
+```json
 const crossChainTx = {
   TransactionType: "Payment",
   Account: userWallet.address,
@@ -209,10 +208,21 @@ const crossChainTx = {
   ],
 }
 ```
+- 다음은 위의 트랜잭션 구조를 기반으로, xrpl.js 라이브러리로 실제로 트랜잭션을 만들어 전송하는 코드입니다.
 
+```ts
 
-
-
+await interchainTransfer({
+  client,
+  userWallet,
+  gatewayAddress: 'rMultisigGatewayAddress',
+  amount: '1000000',
+  destinationEvmAddress: '30413930633041663142303766364143333466333532303334384462666165373342446133353845', // 0x 없이 hex
+  destinationChain: 'xrpl-evm-devnet',
+  gasFeeAmount: '30',
+  // payloadHex: '...' // GMP 호출 시에만
+})
+```
 
 ## 🔄 전송 흐름
 
