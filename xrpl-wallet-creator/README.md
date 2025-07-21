@@ -283,7 +283,7 @@ ts-node xrpl/interchain-transfer.js -e devnet-amplifier -n xrpl XRP 1 xrpl-evm-s
 // XRPL 네트워크 연결 및 지갑 로드
 await client.connect();
 this.adminWallet = Wallet.fromSeed(adminSeed);
-this.userWallet = Wallet.fromSeed(userSeed);
+this.userWallet = Wallet.generate();
 ```
 
 ---
