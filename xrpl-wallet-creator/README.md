@@ -162,6 +162,229 @@ xrpl-wallet-creator/
   - `@axelar-network/axelarjs-sdk`: Axelar SDK
   - `@axelar-network/interchain-token-service`: ITS 서비스
 
+## 💻 XRPL 핵심 트랜잭션 코드
+
+### 🔌 XRPL 연결 및 기본 설정
+
+```typescript
+import { Client, Wallet } from 'xrpl'
+
+// XRPL 클라이언트 초기화
+const client = new Client('wss://s.altnet.rippletest.net:51233')
+await client.connect()
+
+// 기존 지갑 로드
+const adminWallet = Wallet.fromSeed('sEdThoRiyqRs7jZaBvYoL2ePXfQc5A6')
+const userWallet = Wallet.fromSeed('sEd7Su6LCR6xaA1aYd3cHrWi6U4nRWg')
+```
+
+### 🆕 지갑 생성 트랜잭션
+
+```typescript
+// 1. 새 지갑 생성
+const newWallet = Wallet.generate()
+console.log(`📍 주소: ${newWallet.address}`)
+console.log(`🔑 시드: ${newWallet.seed}`)
+
+// 2. 계정 활성화 (20 XRP 펀딩)
+const fundTx = {
+  TransactionType: 'Payment',
+  Account: adminWallet.address, // Admin이 펀딩
+  Destination: newWallet.address,
+  Amount: '20000000', // 20 XRP in drops
+  Fee: '12'
+}
+
+const prepared = await client.autofill(fundTx)
+const signed = adminWallet.sign(prepared)
+const result = await client.submitAndWait(signed.tx_blob)
+
+if (result.result.meta?.TransactionResult === 'tesSUCCESS') {
+  console.log('✅ 계정 활성화 완료')
+}
+```
+
+### 💰 Payment 트랜잭션 (XRP 전송)
+
+```typescript
+// Admin → User XRP 전송
+const paymentTx = {
+  TransactionType: 'Payment',
+  Account: adminWallet.address,      // 송신자
+  Destination: userWallet.address,   // 수신자
+  Amount: '10000000',                // 10 XRP in drops
+  Fee: '12'
+}
+
+const prepared = await client.autofill(paymentTx)
+const signed = adminWallet.sign(prepared)
+const result = await client.submitAndWait(signed.tx_blob)
+
+if (result.result.meta?.TransactionResult === 'tesSUCCESS') {
+  console.log('✅ Payment 전송 완료')
+  console.log(`🔗 트랜잭션 해시: ${result.result.hash}`)
+}
+```
+
+### 🔗 TrustSet 트랜잭션 (IOU 토큰 신뢰 설정)
+
+```typescript
+// IOU 토큰을 위한 TrustSet 설정
+const iouToken = {
+  currency: 'USD',                    // 토큰 심볼
+  issuer: 'rHaHfYw5Krxy6cUee5FpsBv3tLqp1DvYwP', // 발행자 주소
+  limit: '10000'                      // 신뢰 한도
+}
+
+// Admin 계정 TrustSet 설정
+const adminTrustSetTx = {
+  TransactionType: 'TrustSet',
+  Account: adminWallet.address,
+  LimitAmount: {
+    currency: iouToken.currency,
+    issuer: iouToken.issuer,
+    value: iouToken.limit
+  },
+  Flags: 0, // 기본 플래그
+  Fee: '12'
+}
+
+const prepared = await client.autofill(adminTrustSetTx)
+const signed = adminWallet.sign(prepared)
+const result = await client.submitAndWait(signed.tx_blob)
+
+if (result.result.meta?.TransactionResult === 'tesSUCCESS') {
+  console.log('✅ Admin TrustSet 설정 완료')
+}
+
+// User 계정 TrustSet 설정
+const userTrustSetTx = {
+  TransactionType: 'TrustSet',
+  Account: userWallet.address,
+  LimitAmount: {
+    currency: iouToken.currency,
+    issuer: iouToken.issuer,
+    value: iouToken.limit
+  },
+  Flags: 0,
+  Fee: '12'
+}
+
+const userPrepared = await client.autofill(userTrustSetTx)
+const userSigned = userWallet.sign(userPrepared)
+const userResult = await client.submitAndWait(userSigned.tx_blob)
+
+if (userResult.result.meta?.TransactionResult === 'tesSUCCESS') {
+  console.log('✅ User TrustSet 설정 완료')
+}
+```
+
+### 🪙 IOU 토큰 발행 (Payment 트랜잭션)
+
+```typescript
+// Admin이 User에게 IOU 토큰 발행
+const iouToken = {
+  currency: 'USD',
+  issuer: adminWallet.address, // Admin이 발행자
+  amount: '1000' // 발행할 양
+}
+
+const issueTx = {
+  TransactionType: 'Payment',
+  Account: adminWallet.address,
+  Destination: userWallet.address,
+  Amount: {
+    currency: iouToken.currency,
+    issuer: iouToken.issuer,
+    value: iouToken.amount
+  },
+  Fee: '12'
+}
+
+const prepared = await client.autofill(issueTx)
+const signed = adminWallet.sign(prepared)
+const result = await client.submitAndWait(signed.tx_blob)
+
+if (result.result.meta?.TransactionResult === 'tesSUCCESS') {
+  console.log('✅ IOU 토큰 발행 완료')
+}
+```
+
+### ⚙️ 계정 설정 트랜잭션
+
+```typescript
+// AccountSet 트랜잭션 (계정 속성 설정)
+const accountSetTx = {
+  TransactionType: 'AccountSet',
+  Account: userWallet.address,
+  Domain: '736F6D65646F6D61696E2E636F6D', // hex("somedomain.com")
+  EmailHash: 'F939A06C3C4B3C4B3C4B3C4B3C4B3C4B3C4B3C4B', // 이메일 해시
+  MessageKey: '03AB40A0490F9B7ED8DF29D246BF2D6269820A0EE7742ACDD457BEA7C7D0931EDB', // 메시지 키
+  TransferRate: 0, // 전송 수수료율 (0 = 수수료 없음)
+  TickSize: 5, // 가격 틱 크기
+  Fee: '12'
+}
+
+const prepared = await client.autofill(accountSetTx)
+const signed = userWallet.sign(prepared)
+const result = await client.submitAndWait(signed.tx_blob)
+
+if (result.result.meta?.TransactionResult === 'tesSUCCESS') {
+  console.log('✅ AccountSet 설정 완료')
+}
+```
+
+### 🔐 멀티서명 설정
+
+```typescript
+// SignerListSet 트랜잭션
+const signerAccounts = ['rAccount1', 'rAccount2', 'rAccount3']
+
+const signerListTx = {
+  TransactionType: 'SignerListSet',
+  Account: userWallet.address,
+  SignerQuorum: 2, // 서명자 중 2명이 서명해야 함
+  SignerEntries: signerAccounts.map((account, index) => ({
+    SignerEntry: {
+      Account: account,
+      SignerWeight: 1
+    }
+  })),
+  Fee: '12'
+}
+
+const prepared = await client.autofill(signerListTx)
+const signed = userWallet.sign(prepared)
+const result = await client.submitAndWait(signed.tx_blob)
+
+if (result.result.meta?.TransactionResult === 'tesSUCCESS') {
+  console.log('✅ 멀티서명 설정 완료')
+  console.log(`👥 서명자: ${signerAccounts.join(', ')}`)
+  console.log(`📊 필요 서명 수: 2`)
+}
+```
+
+### 🧹 계정 삭제
+
+```typescript
+// AccountDelete 트랜잭션 (XRP 2.0+)
+const deleteTx = {
+  TransactionType: 'AccountDelete',
+  Account: userWallet.address,
+  Destination: adminWallet.address, // 남은 XRP를 받을 주소
+  Fee: '5000000' // 5 XRP (계정 삭제 수수료)
+}
+
+const prepared = await client.autofill(deleteTx)
+const signed = userWallet.sign(prepared)
+const result = await this.client.submitAndWait(signed.tx_blob)
+
+if (result.result.meta?.TransactionResult === 'tesSUCCESS') {
+  console.log('✅ 계정 삭제 완료')
+  console.log(`💰 남은 XRP가 ${adminWallet.address}로 전송됨`)
+}
+```
+
 ## 📊 전송 과정
 
 1. **XRPL 연결**: XRPL 테스트넷에 연결하고 Admin/User 지갑 로드
