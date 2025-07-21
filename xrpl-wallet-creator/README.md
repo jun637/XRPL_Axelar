@@ -163,6 +163,7 @@ const iouPaymentTx = {
 - [Axelar 공식 문서: XRPL ITS](https://docs.axelar.dev/dev/send-tokens/xrpl/xrpl-its/)
 - 
 // 크로스체인 전송 트랜잭션 예시 (Axelar 공식 문서 기반)
+```ts
 const crossChainTx = {
   TransactionType: "Payment",
   Account: userWallet.address,
@@ -207,8 +208,7 @@ const crossChainTx = {
     },
   ],
 }
-
-
+```
 
 
 
