@@ -7,8 +7,8 @@
 
 import { XRPLConnection } from './step1_xrpl_connection'
 import { BalanceChecker } from './step2_balance_check'
-import { XRPLToAxelarTransfer } from './step3_xrpl_to_axelar'
-import { AxelarGatewayProcessor } from './step4_axelar_gateway_processing'
+import { AdminToUserXRPIssuer } from './step3_admin_to_user_xrp_issue'
+import { AxelarGatewayProcessor } from './step4_user_to_gateway_payment'
 import { ITSCrossChainTransfer } from './step5_its_cross_chain_transfer'
 import { GMPMessageTransmission } from './step6_gmp_message_transmission'
 import { ITSContractExecution } from './step7_its_contract_execution'
@@ -76,11 +76,11 @@ class CompleteTransferExecutor {
       this.stepResults.set('step2', balanceResult)
       console.log('✅ Step 2 완료\n')
 
-      // Step 3: XRPL → Axelar 전송
-      console.log('📋 Step 3: XRPL → Axelar 전송')
-      const xrplToAxelar = new XRPLToAxelarTransfer(xrplClient, wallets.admin, wallets.user)
-      const transferResult = await xrplToAxelar.transferToGateway(this.transferParams.amount)
-      this.stepResults.set('step3', transferResult)
+      // Step 3: Admin → User XRP 발행
+      console.log('📋 Step 3: Admin → User XRP 발행')
+      const xrpIssuer = new AdminToUserXRPIssuer(xrplClient, wallets.admin, wallets.user)
+      const issueResult = await xrpIssuer.issueXRPToUser(this.transferParams.amount)
+      this.stepResults.set('step3', issueResult)
       console.log('✅ Step 3 완료\n')
 
       // Step 4: User → Axelar Gateway 전송
@@ -91,7 +91,7 @@ class CompleteTransferExecutor {
         destination: this.transferParams.destinationAddress, 
         amount: this.transferParams.amount
       }
-      await gatewayProcessor.processGatewayTransaction(transferResult, memoData)
+      await gatewayProcessor.processGatewayTransaction(issueResult, memoData)
       this.stepResults.set('step4', true)
       console.log('✅ Step 4 완료\n')
 

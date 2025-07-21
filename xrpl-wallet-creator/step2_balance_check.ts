@@ -228,6 +228,117 @@ class BalanceChecker {
     }
   }
 
+  // 🪙 IOU 토큰을 위한 TrustSet 트랜잭션 (주석)
+  /*
+  async setupTrustSetForIOU(): Promise<void> {
+    console.log('🔗 IOU 토큰 TrustSet 설정 중...')
+    
+    try {
+      // IOU 토큰 정보 (예: USDC)
+      const iouToken = {
+        currency: 'USD',                    // 🪙 토큰 심볼
+        issuer: 'rHaHfYw5Krxy6cUee5FpsBv3tLqp1DvYwP', // 🏦 발행자 주소 (Axelar Gateway)
+        limit: '10000'                      // 💰 신뢰 한도
+      }
+      
+      // 1. Admin 계정 TrustSet 설정
+      console.log('👤 Admin 계정 TrustSet 설정...')
+      const adminTrustSetTx = {
+        TransactionType: 'TrustSet',
+        Account: this.adminWallet.address,
+        LimitAmount: {
+          currency: iouToken.currency,
+          issuer: iouToken.issuer,
+          value: iouToken.limit
+        },
+        Flags: 0, // 기본 플래그
+        Fee: '12' // drops 단위
+      }
+      
+      // 트랜잭션 서명 및 제출
+      const adminPrepared = await this.client.autofill(adminTrustSetTx)
+      const adminSigned = this.adminWallet.sign(adminPrepared)
+      const adminResult = await this.client.submitAndWait(adminSigned.tx_blob)
+      
+      if (adminResult.result.meta?.TransactionResult === 'tesSUCCESS') {
+        console.log('✅ Admin TrustSet 설정 완료')
+      } else {
+        throw new Error(`Admin TrustSet 실패: ${adminResult.result.meta?.TransactionResult}`)
+      }
+      
+      // 2. User 계정 TrustSet 설정
+      console.log('👤 User 계정 TrustSet 설정...')
+      const userTrustSetTx = {
+        TransactionType: 'TrustSet',
+        Account: this.userWallet.address,
+        LimitAmount: {
+          currency: iouToken.currency,
+          issuer: iouToken.issuer,
+          value: iouToken.limit
+        },
+        Flags: 0,
+        Fee: '12'
+      }
+      
+      const userPrepared = await this.client.autofill(userTrustSetTx)
+      const userSigned = this.userWallet.sign(userPrepared)
+      const userResult = await this.client.submitAndWait(userSigned.tx_blob)
+      
+      if (userResult.result.meta?.TransactionResult === 'tesSUCCESS') {
+        console.log('✅ User TrustSet 설정 완료')
+      } else {
+        throw new Error(`User TrustSet 실패: ${userResult.result.meta?.TransactionResult}`)
+      }
+      
+      console.log('🎉 IOU 토큰 TrustSet 설정 완료!')
+      
+    } catch (error) {
+      console.error('❌ TrustSet 설정 실패:', error)
+      throw new Error(`TrustSet 설정 실패: ${error}`)
+    }
+  }
+  
+  // 🔄 IOU 토큰 발행 (Admin이 User에게)
+  /*
+  async issueIOUToken(): Promise<void> {
+    console.log('🪙 IOU 토큰 발행 중...')
+    
+    try {
+      const iouToken = {
+        currency: 'USD',
+        issuer: this.adminWallet.address, // Admin이 발행자
+        amount: '1000' // 발행할 양
+      }
+      
+      const issueTx = {
+        TransactionType: 'Payment',
+        Account: this.adminWallet.address,
+        Destination: this.userWallet.address,
+        Amount: {
+          currency: iouToken.currency,
+          issuer: iouToken.issuer,
+          value: iouToken.amount
+        },
+        Fee: '12'
+      }
+      
+      const prepared = await this.client.autofill(issueTx)
+      const signed = this.adminWallet.sign(prepared)
+      const result = await this.client.submitAndWait(signed.tx_blob)
+      
+      if (result.result.meta?.TransactionResult === 'tesSUCCESS') {
+        console.log('✅ IOU 토큰 발행 완료')
+      } else {
+        throw new Error(`IOU 토큰 발행 실패: ${result.result.meta?.TransactionResult}`)
+      }
+      
+    } catch (error) {
+      console.error('❌ IOU 토큰 발행 실패:', error)
+      throw new Error(`IOU 토큰 발행 실패: ${error}`)
+    }
+  }
+  */
+
   async generateBalanceReport(): Promise<string> {
     const balances = await this.checkXRPBalances()
     await this.checkAccountStatus()
