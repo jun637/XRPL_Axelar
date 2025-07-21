@@ -1,7 +1,7 @@
 # XRPL ↔ Axelar 크로스체인 전송 시스템
 
 ## 목적
-XRPL(리플)에서 발행한 스테이블코인(XRP/IOU)을 Axelar Interchain Token Service(ITS)를 통해 이더리움 등 타 블록체인으로 안전하게 전송하는 과정을 실제 코드로 구현하고, 실전 개발에 참고할 수 있도록 문서화합니다.
+XRPL(리플)에서 발행한 스테이블코인(XRP/IOU)을 Axelar Interchain Token Service(ITS)를 통해 이더리움 등 타 블록체인으로 안전하게 전송하는 과정을 실제 코드로 구현하고, 실전 개발에 참고할 수 있도록 문서화합니다. 
 
 ## 목차
 1. [기술 스택](#기술-스택)
