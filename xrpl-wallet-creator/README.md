@@ -148,7 +148,7 @@ if (result.result.meta?.TransactionResult === 'tesSUCCESS') {
 ```
 * XRPL에서는 XRPL의 네이티브 토큰인 XRP를 제외한 IOU(토큰)를 받으려면, 해당 IOU의 issuer에 대해 trustline을 먼저 설정해야 합니다.
 * 받는 쪽(수신자)이 반드시 해당 issuer에 대해 trustline을 먼저 설정해야 그 토큰을 받을 수 있습니다.
-* 위 코드는 XRPL에서 Trustline을 설정하기 위한 TrustSet 트랜잭션 예시 코드입니다.
+* 위 코드는 XRPL에서 Trustline을 설정하기 위한 TrustSet 트랜잭션 객체 예시시입니다.
   
 ### XRP/IOU 전송(Payment)
 - [XRPL 공식 Payment 트랜잭션](https://xrpl.org/payment.html)
@@ -183,13 +183,13 @@ const iouPaymentTx = {
 ## Axelar 핵심 코드 및 설명
 
 ### 크로스체인 전송 관련 트랜잭션(Memo)
-- [Axelar 공식 문서: XRPL ITS](https://docs.axelar.dev/dev/send-tokens/xrpl/xrpl-its/)
+- [Axelar 공식 문서: XRPL-ITS](https://docs.axelar.dev/dev/send-tokens/xrpl/xrpl-its/)
 - 크로스체인 전송 트랜잭션의 json 형식입니다. (Axelar 공식 문서 기반)
 ```
 const crossChainTx = {
   TransactionType: "Payment",
   Account: userWallet.address,
-  Amount: "1000000", // (1 XRP)
+  Amount: "1000000", // (1 XRP), XRP를 보내는 경우 Amount는 문자열
   // Amount: { // alternatively, an IOU token amount can be used to cover gas fees
   //   currency: "ABC", // IOU의 currency code
   //   issuer: "r4DVHyEisbgQRAXCiMtP2xuz5h3dDkwqf1", // IOU issuer의 XRPL 주소
@@ -231,6 +231,8 @@ const crossChainTx = {
   ],
 }
 ```
+* XRPL에서 Axelar ITS를 이용해 IOU를 다른 체인(Etherium, Polygon 등)으로 보내려면 먼저 Axelar gateway로 특정한 형식의 Payment 트랜잭션을 전송해야 합니다.
+* 위 코드는 해당 트랜잭션 형식으로, 기존 XRPL Payment 트랜잭션의 Memo필드에 추가 정보(목적지 체인 주소, 체인명, 가스비 등)를 hex 인코딩하여 전송합니다. 
 - 다음은 위의 트랜잭션 구조를 기반으로, xrpl.js 라이브러리로 실제로 트랜잭션을 만들어 전송하는 함수입니다.
 
 ```ts
