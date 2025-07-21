@@ -71,8 +71,13 @@ XRPL(XRP Ledger)에서 발행한 스테이블코인(IOU)을 Axelar Interchain To
 ## 설치 및 환경설정
 ```bash
 npm install
+npm install ethers @axelar-network/axelarjs-sdk @axelar-network/interchain-token-service
+# (TypeScript 개발 시)
+npm install --save-dev typescript ts-node @types/node
 cp .env.example .env # 환경변수 파일 생성 후 값 입력
 ```
+
+* 환경변수(.env 파일) : 테스트용 지갑 시드, XRPL,Axelar,Ethereum 등 사용 네트워크의 RPC 및 프라이빗 키 등
 ---
 
 ## XRPL 핵심 코드 및 설명
