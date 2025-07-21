@@ -25,6 +25,7 @@ XRPL(XRP Ledger)에서 발행한 스테이블코인(IOU)을 Axelar Interchain To
   - [`ethers`](https://docs.ethers.org/): Ethereum 인터페이스
   - [`@axelar-network/axelarjs-sdk`](https://docs.axelar.dev/dev/axelarjs-sdk): Axelar SDK
   - [`@axelar-network/interchain-token-service`](https://docs.axelar.dev/dev/interchain-token-service): ITS 서비스
+  
 ## 핵심 용어
 **1. **XRPL**** - 리플의 퍼블릭 블록체인 네트워크
 
@@ -52,25 +53,15 @@ XRPL(XRP Ledger)에서 발행한 스테이블코인(IOU)을 Axelar Interchain To
 
 ## 전체 흐름
 ```
-1. Admin이 XRPL에서 User에게 XRP(또는 IOU) 발행
-2. User가 Axelar Gateway(multisig)로 Payment + Memo 전송
-3. Axelar 네트워크가 Memo 해석, ITS를 통해 타 체인으로 토큰화
-4. 목적지 체인(Ethereum 등)에서 User가 토큰 수령
-=======
-## 💻 XRPL 핵심 트랜잭션 코드
 
-### 🔌 XRPL 연결 및 기본 설정
-
-```typescript
-import { Client, Wallet } from 'xrpl'
-
-// XRPL 클라이언트 초기화
-const client = new Client('wss://s.altnet.rippletest.net:51233')
-await client.connect()
-
-// 기존 지갑 로드(admin용)
-const adminWallet = Wallet.fromSeed('sEdThoRiyqRs7jZaBvYoL2ePXfQc5A6')
->>>>>>> 6216f0dab24f220700564267e047585416368687
+1. **XRPL 연결**: XRPL 테스트넷에 연결하고 Admin/User 지갑 로드
+2. **잔액 확인**: Admin과 User 계정의 XRP 잔액 확인
+3. **Admin → User XRP 발행**: 관리자가 사용자에게 XRP 전송
+4. **User → Axelar Gateway 전송**: 사용자가 Axelar Gateway로 XRP 전송 (크로스체인 정보 포함)
+5. **ITS 토큰 등록 확인 및 크로스체인 전송**: ITS에서 XRP 토큰 등록 상태 확인 후 크로스체인 전송
+6. **GMP 메시지 전송**: General Message Passing 메시지 전송
+7. **ITS 컨트랙트 실행**: 목적지 체인에서 ITS 컨트랙트 실행
+8. **최종 확인**: 전체 전송 과정 검증 및 완료
 ```
 
 ## 설치 및 환경설정
@@ -194,19 +185,9 @@ if (result.result.meta?.TransactionResult === 'tesSUCCESS') {
 
 
 
-## 📊 전송 과정
 
-1. **XRPL 연결**: XRPL 테스트넷에 연결하고 Admin/User 지갑 로드
-2. **잔액 확인**: Admin과 User 계정의 XRP 잔액 확인
-3. **Admin → User XRP 발행**: 관리자가 사용자에게 XRP 전송
-4. **User → Axelar Gateway 전송**: 사용자가 Axelar Gateway로 XRP 전송 (크로스체인 정보 포함)
-5. **ITS 토큰 등록 확인 및 크로스체인 전송**: ITS에서 XRP 토큰 등록 상태 확인 후 크로스체인 전송
-6. **GMP 메시지 전송**: General Message Passing 메시지 전송
-7. **ITS 컨트랙트 실행**: 목적지 체인에서 ITS 컨트랙트 실행
-8. **최종 확인**: 전체 전송 과정 검증 및 완료
 
-**ITS(Interchain Token Service):**
-**실제 전송 과정에서는 5~7의 단계는 Axelar ITS 내 Amplifier 노드가 자동 수행**
+
 
 ## 🔄 전송 흐름
 
@@ -219,6 +200,8 @@ Axelar Gateway → Axelar 네트워크 (Memo 해석)
      ↓
 Axelar ITS → Ethereum (토큰화된 XRP 전달)
 ```
+
+**실제 전송 과정에서는 5~7의 단계는 Axelar ITS 내 Amplifier 노드가 자동 수행**
 
 ### 💡 실전 예시
 
