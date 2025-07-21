@@ -2,7 +2,7 @@
 
 ## 목적
 XRPL(XRP Ledger)에서 발행한 스테이블코인(IOU)을 Axelar Interchain Token Service(ITS)를 통해 이더리움 등 타 블록체인으로 안전하게 전송하는 과정을 실제 코드로 구현하고, 실전에 적용할 수 있도록 문서화
-
+---
 ## 목차
 1. [기술 스택](#기술-스택)
 2. [핵심 용어](#핵심-용어)
@@ -18,7 +18,7 @@ XRPL(XRP Ledger)에서 발행한 스테이블코인(IOU)을 Axelar Interchain To
 7. [참고 자료/공식 문서](#참고-자료공식-문서)
 8. [주의사항](#주의사항)
 9. [라이선스](#라이선스)
-
+---
 ## 기술 스택
 - **Blockchain**: XRPL, Ethereum, Axelar
 - **Language**: TypeScript
@@ -27,7 +27,7 @@ XRPL(XRP Ledger)에서 발행한 스테이블코인(IOU)을 Axelar Interchain To
   - [`ethers`](https://docs.ethers.org/): Ethereum 인터페이스
   - [`@axelar-network/axelarjs-sdk`](https://docs.axelar.dev/dev/axelarjs-sdk): Axelar SDK
   - [`@axelar-network/interchain-token-service`](https://docs.axelar.dev/dev/interchain-token-service): ITS 서비스
-  
+---
 ## 핵심 용어
 **1. **XRPL**** - 리플의 퍼블릭 블록체인 네트워크
 
@@ -52,7 +52,7 @@ XRPL(XRP Ledger)에서 발행한 스테이블코인(IOU)을 Axelar Interchain To
 **11. Drops** - XRP의 최소 단위(1 XRP = 1,000,000 drops)
 
 **12. EVM** - Ethereum Virtual Machine, 이더리움 및 호환 네트워크
-
+---
 ## 전체 흐름
 ```
 
@@ -65,7 +65,7 @@ XRPL(XRP Ledger)에서 발행한 스테이블코인(IOU)을 Axelar Interchain To
 7. **ITS 컨트랙트 실행**: 목적지 체인에서 ITS 컨트랙트 실행
 8. **최종 확인**: 전체 전송 과정 검증 및 완료
 ```
-
+---
 ## 설치 및 환경설정
 ```bash
 npm install
