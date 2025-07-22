@@ -19,7 +19,7 @@ XRPL(XRP Ledger)에서 발행한 스테이블코인(IOU)을 Axelar Interchain To
 6. [Axelar 핵심 코드 및 설명](#Axelar-핵심-코드-및-설명)
     - [크로스체인 전송 관련 트랜잭션](#크로스체인-전송-관련-트랜잭션)
 7. [참고 자료/공식 문서](#참고-자료공식-문서)
-8. [주의사항(Gotcha & Tips)](#주의사항Gotcha-&-tips)  
+8. [주의사항(Gotcha & Tips)](#주의사항Gotcha-&-Tips)  
 9. [라이선스](#라이선스)
 ---
 ## 기술 스택
