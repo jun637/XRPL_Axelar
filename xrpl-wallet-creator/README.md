@@ -402,8 +402,8 @@ const paymentTx = {
 - [Axelar 공식 문서: XRPL ↔ EVM](https://docs.axelar.dev/dev/xrpl)
 
 ## 주의사항(Gotcha & Tips)
-# JS → TS 변환 시 주의사항
-1. XRPL 트랜잭션 응답의 meta 타입가드
+#1. JS → TS 변환 시 주의사항
+트랜잭션에서 meta 타입가드
 JS 예제에서는 다음과 같이 바로 접근해도 문제없지만:
 ```js
     if (result.result.meta?.TransactionResult === 'tesSUCCESS') {
@@ -422,8 +422,21 @@ if (
   }
 }
 ```
-* JS는 동적 타입이라 런타임에만 에러가 나지만, TS는 정적 타입 검사로 컴파일 타임에 오류를 잡아줌.
+* JS는 동적 타입이라 런타임에만 에러가 나지만, TS는 정적 타입 검사로 컴파일 타임에 오류를 잡아줍니다.
 * XRPL 라이브러리 타입 정의상 meta가 string일 수도 있어서, 타입가드 없이는 컴파일 에러 발생.
+  
+#2. WalletfromSeed() 오류
+```ts
+const adminSeed = process.env.ADMIN_SEED //환경변수 파일에 저장된 Seed 불러옴
+
+this.adminWallet = Wallet.fromSeed(adminSeed) //오류
+
+this.adminWallet = Wallet.fromSeed(adminSeed.trim()) //js는 이렇게
+this.adminWallet = Wallet.fromSeed(adminSeed!.trim()) //ts는 이렇게
+```
+* 지갑을 생성할 때, Wallet.generate()를 사용하지 않고 기존 지갑의 시드를 사용해 복원하고 싶을 때는 WalletfromSeed()가 효율적입니다.
+* .env파일에 시드를 저장하고 WalletfromSeed()로 불러온다면, .trim() 사용
+* 이유 : Node.js에서 문자열로 불러올 Seed 뒤에 붙은 공백,개행문자,특수문자를 제거해야 합니다.
 ### 일반적인 오류
 
 1. **TypeScript 컴파일 오류**
