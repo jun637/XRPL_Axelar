@@ -138,7 +138,7 @@ if (result.result.meta?.TransactionResult === 'tesSUCCESS') {
 * 실제로 XRPL 네트워크에 계정(지갑)이 등록되는 것은 위 Payment 트랜잭션(계정 활성화)를 통해서입니다.
 * 이 때 base reserve로 최소 10XRP(테스트넷의 경우 20XRP)를 전송해야 계정이 활성화됩니다. 
 
-### TrustSet(신뢰설정)
+### 신뢰설정(TrustSet)
 - [XRPL Ledger : xrpl.js - Trustset](https://xrpl.org/trustset.html)
 ```typescript
 const trustSetTx = {
