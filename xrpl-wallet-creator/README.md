@@ -208,6 +208,7 @@ if (result.result.meta?.TransactionResult === 'tesSUCCESS') {
 ```
 * XRPL에서는 AccountSet 트랜잭션으로 특정 계정에 대한 기능을 활성화합니다.
 * 특정 계정이 **스테이블코인**처럼 규제 대상이거나 통제된 환경에서 운용될 IOU(토큰)를 발행하고자 한다면, RequireAuth 플래그를 설정해서 "허가받은 계정만 보유 가능"한 구조로 설계하는 것이 적절합니다.
+* 만약 XRPL의 네이티브 토큰인 XRP를 주고받거나, 발행하는 토큰에 대한 통제가 굳이 필요하지 않다면, 해당 플래그를 설정하지 않아도 괜찮습니다.
 * 위 코드는 admin - user 사이의 RequireAuth 플래그 설정이 포함된 Trustline 설정 순서입니다. 
   
 ### XRP/IOU 전송(Payment)
