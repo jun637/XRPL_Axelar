@@ -13,7 +13,7 @@ XRPL(XRP Ledger)에서 발행한 스테이블코인(IOU)을 Axelar Interchain To
     - [XRPL 연결 및 지갑 생성](#xrpl-연결-및-지갑-생성)
     - [계정 활성화(Payment)](#계정-활성화payment)
     - [TrustSet(신뢰설정)](#trustset신뢰설정)
-    - 계정 설정(AccountSet) - RequireAuth 플래그[계정 설정(AccountSet)](#계정-설정AccountSet---RequireAuth-플래그)
+    - [계정 설정(AccountSet)](#계정-설정AccountSet---RequireAuth-플래그)
     - [XRP/IOU 전송(Payment)](#xrpiou-전송payment)
 6. [Axelar 핵심 코드 및 설명](#Axelar-핵심-코드-및-설명)
     - [크로스체인 전송 관련 트랜잭션](#크로스체인-전송-관련-트랜잭션)
