@@ -140,9 +140,10 @@ if (result.result.meta?.TransactionResult === 'tesSUCCESS') {
   console.log('✅ 계정 활성화 완료')
 }
 ```
-* 네트워크에 생성된 지갑이 활성화되려면 계정 활성화를 위한 트랜잭션을 제출해야 합니다.
+* 새로 네트워크에 생성된 지갑(newWallet)이 활성화되려면 계정 활성화를 위한 트랜잭션을 제출해야 합니다.
 * 실제로 XRPL 네트워크에 계정(지갑)이 등록되는 것은 위 Payment 트랜잭션(계정 활성화)를 통해서입니다.
-* 이 때 base reserve로 최소 10XRP(테스트넷의 경우 20XRP)를 전송해야 계정이 활성화됩니다. 
+* 이 때 base reserve로 최소 10XRP(테스트넷의 경우 20XRP)를 전송해야 계정이 활성화됩니다.
+* 테스트넷에서는 Client.fundWallet()으로 셀프 계정 활성화가 가능하지만 위 코드에선 admin이 20XRP를 보내 newWallet을 활성화시키는 방법을 사용했습니다.
 
 ### 신뢰설정(TrustSet)
 - [XRPL Ledger : xrpl.js - Trustset](https://xrpl.org/trustset.html)
