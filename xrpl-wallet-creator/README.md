@@ -11,7 +11,7 @@ XRPL(XRP Ledger)에서 발행한 스테이블코인(IOU)을 Axelar Interchain To
 4. [설치 및 환경설정](#설치-및-환경설정)
 5. [XRPL 핵심 코드 및 설명](#XRPL-핵심-코드-및-설명)
     - [XRPL 서버 연결](#xrpl-서버-연결)
-    - [지갑 생성](#지갑-생성)
+    - [지갑 생성(Wallet)](#지갑-생성Wallet)
     - [계정 활성화(Payment)](#계정-활성화payment)
     - [TrustSet(신뢰설정)](#trustset신뢰설정)
     - [계정 설정(AccountSet)](#계정-설정AccountSet---RequireAuth-플래그)
