@@ -401,7 +401,7 @@ const paymentTx = {
 - [XRPL TrustSet 트랜잭션](https://xrpl.org/trustset.html)
 - [Axelar 공식 문서: XRPL ↔ EVM](https://docs.axelar.dev/dev/xrpl)
 
-## ⚠️주의사항(Gotcha & Tips)
+## 주의사항(Gotcha & Tips)
 # JS → TS 변환 시 주의사항
 1. XRPL 트랜잭션 응답의 meta 타입가드
 JS 예제에서는 다음과 같이 바로 접근해도 문제없지만:
