@@ -149,11 +149,51 @@ if (result.result.meta?.TransactionResult === 'tesSUCCESS') {
 ```
 * XRPL에서는 XRPL의 네이티브 토큰인 XRP를 제외한 IOU(토큰)를 받으려면, 해당 IOU의 issuer에 대해 trustline을 먼저 설정해야 합니다.
 * 받는 쪽(수신자)이 반드시 해당 issuer에 대해 trustline을 먼저 설정해야 그 토큰을 받을 수 있습니다.
-* 위 코드는 XRPL에서 Trustline을 설정하기 위한 TrustSet 트랜잭션 객체 예시시입니다.
+* 위 코드는 XRPL에서 Trustline을 설정하기 위한 TrustSet 트랜잭션 객체 예시입니다.
   
+### 계정 설정(AccountSet) - RequireAuth
+- [XRPL Ledger : xrpl.js - AccountSet](https://js.xrpl.org/interfaces/AccountSet.html)
+- [xrpl.org - Authorized Trust Lines]( https://xrpl.org/docs/concepts/tokens/fungible-tokens/authorized-trust-lines)
+1. Admin이 RequireAuth 플래그 설정
+```json
+{
+  "TransactionType": "AccountSet",
+  "Account": "rAdminAddress...",
+  "SetFlag": 2  // asfRequireAuth
+}
+```
+2. User가 Admin 주소에 대해 TrustLine 설정
+```json
+{
+  "TransactionType": "TrustSet",
+  "Account": "rUserAddress...",
+  "LimitAmount": {
+    "currency": "USD",
+    "issuer": "rAdminAddress...",
+    "value": "1000"
+  }
+}
+```
+3. Admin이 User의 TrustLine을 승인
+```json
+{
+  "TransactionType": "TrustSet",
+  "Account": "rAdminAddress...",
+  "LimitAmount": {
+    "currency": "USD",
+    "issuer": "rUserAddress...",  // 주의: 여기서 issuer는 User 주소
+    "value": "0"
+  },
+  "Flags": 65536  // tfSetfAuth
+}
+```
+* XRPL에서는 AccountSet 트랜잭션으로 특정 계정에 대한 기능 활성화를 합니다.
+* 특정 계정이 **스테이블코인**처럼 규제 대상이거나 통제된 환경에서 운용될 IOU(토큰)를 발행하고자 한다면, RequireAuth 플래그를 설정해서 "허가받은 계정만 보유 가능"한 구조로 설계하는 것이 적절합니다.
+* 위 코드는 admin - user 사이의 RequireAuth 플래그 설정이 포함된 Trustline 설정 순서입니다.
+* 
 ### XRP/IOU 전송(Payment)
-- [XRPL 공식 Payment 트랜잭션](https://xrpl.org/payment.html)
-- [XRPL Ledger : xrpl.js - Payment](https://js.xrpl.org/interfaces/Payment.html) 
+- [XRPL Ledger : xrpl.js - Payment](https://js.xrpl.org/interfaces/Payment.html)
+- [xrpl.org - Payment](https://xrpl.org/payment.html)
 ```typescript
 // 기존 지갑 로드(user용)
 const userWallet = Wallet.fromSeed('sEd7Su6LCR6xaA1aYd3cHrWi6U4nRWg')
