@@ -83,7 +83,10 @@ cp .env.example .env # 환경변수 파일 생성 후 값 입력
 ---
 
 ## XRPL 핵심 코드 및 설명
-
+* 시작하기에 앞서, XRPL testnet,devnet에서 지갑을 생성한 적이 없다면 [XRP Faucet](https://xrpl.org/xrp-testnet-faucet.html)에서 새 지갑과 토큰 발급(발급 동시에 계정 활성화)
+* xrpl.js에서는 Client.fundWallet()을 통해 코드 자체적으로도 faucet 기능을 사용할 수 있습니다
+* 아래 핵심 코드에서 admin 지갑은 [XRP Faucet](https://xrpl.org/xrp-testnet-faucet.html)에서 미리 발급받은 지갑이라고 보시면 됩니다.
+  
 ### XRPL 서버 연결 
 - [XRPL Ledger : xrpl.js - Client](https://js.xrpl.org/classes/Client.html)
 ```typescript
