@@ -13,6 +13,7 @@ XRPL(XRP Ledger)에서 발행한 스테이블코인(IOU)을 Axelar Interchain To
     - [XRPL 연결 및 지갑 생성](#xrpl-연결-및-지갑-생성)
     - [계정 활성화(Payment)](#계정-활성화payment)
     - [TrustSet(신뢰설정)](#trustset신뢰설정)
+    - 계정 설정(AccountSet) - RequireAuth 플래그[계정 설정(AccountSet)](#계정-설정AccountSet-RequireAuth-플래그)
     - [XRP/IOU 전송(Payment)](#xrpiou-전송payment)
 6. [Axelar 핵심 코드 및 설명](#Axelar-핵심-코드-및-설명)
     - [크로스체인 전송 관련 트랜잭션](#크로스체인-전송-관련-트랜잭션)
@@ -151,7 +152,7 @@ if (result.result.meta?.TransactionResult === 'tesSUCCESS') {
 * 받는 쪽(수신자)이 반드시 해당 issuer에 대해 trustline을 먼저 설정해야 그 토큰을 받을 수 있습니다.
 * 위 코드는 XRPL에서 Trustline을 설정하기 위한 TrustSet 트랜잭션 객체 예시입니다.
   
-### 계정 설정(AccountSet) - RequireAuth
+### 계정 설정(AccountSet) - RequireAuth 플래그
 - [XRPL Ledger : xrpl.js - AccountSet](https://js.xrpl.org/interfaces/AccountSet.html)
 - [xrpl.org - Authorized Trust Lines]( https://xrpl.org/docs/concepts/tokens/fungible-tokens/authorized-trust-lines)
 1. Admin이 RequireAuth 플래그 설정
