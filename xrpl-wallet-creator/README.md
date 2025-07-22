@@ -10,7 +10,8 @@ XRPL(XRP Ledger)에서 발행한 스테이블코인(IOU)을 Axelar Interchain To
 3. [전체 흐름](#전체-흐름)
 4. [설치 및 환경설정](#설치-및-환경설정)
 5. [XRPL 핵심 코드 및 설명](#XRPL-핵심-코드-및-설명)
-    - [XRPL 연결 및 지갑 생성](#xrpl-연결-및-지갑-생성)
+    - [XRPL 서버 연결](#xrpl-서버-연결)
+    - [지갑 생성](#지갑-생성)
     - [계정 활성화(Payment)](#계정-활성화payment)
     - [TrustSet(신뢰설정)](#trustset신뢰설정)
     - [계정 설정(AccountSet)](#계정-설정AccountSet---RequireAuth-플래그)
@@ -83,7 +84,19 @@ cp .env.example .env # 환경변수 파일 생성 후 값 입력
 
 ## XRPL 핵심 코드 및 설명
 
-### XRPL 연결 및 지갑 생성
+### XRPL 서버 연결 
+- [XRPL Ledger : xrpl.js - Client](https://js.xrpl.org/classes/Client.html)
+```typescript
+import { Client } from 'xrpl'
+
+const client = new Client('wss://s.altnet.rippletest.net:51233') // 테스트넷
+await client.connect()
+```
+* XRPL은 HTTP가 아니라 WebSocket(wss://)으로 통신하므로, Client 연결이 필요합니다.
+* 트랜잭션을 보내기 전에는 await client.connect()를 반드시 호출해야 합니다.
+* Client 객체는 connect() 후 자동으로 WebSocket을 유지하므로, 트랜잭션 수행이 끝났다면 await client.disconnect()를 호출해 연결을 종료하는 것이 좋습니다.
+* 
+### 지갑 생성(Wallet)
 - [XRPL Ledger : xrpl.js - Wallet](https://js.xrpl.org/classes/Wallet.html)
 ```typescript
 <<<<<<< HEAD
