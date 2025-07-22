@@ -98,16 +98,15 @@ await client.connect()
 * 
 ### 지갑 생성(Wallet)
 - [XRPL Ledger : xrpl.js - Wallet](https://js.xrpl.org/classes/Wallet.html)
+
+1. 하드코딩된 Seed를 Wallet.fromSeed()를 통해 불러와 admin 지갑 불러오기
 ```typescript
-<<<<<<< HEAD
-import { Client, Wallet } from 'xrpl'
-const client = new Client('wss://s.altnet.rippletest.net:51233')
-await client.connect()
-// 기존 지갑 로드(admin용)
+import { Wallet } from 'xrpl'
+
 const adminWallet = Wallet.fromSeed('sEdThoRiyqRs7jZaBvYoL2ePXfQc5A6')
-=======
->>>>>>> 6216f0dab24f220700564267e047585416368687
-// 1. 새 지갑 생성(user)
+```
+2. Wallet.generate()로 user의 지갑을 생성
+```typescript
 const newWallet = Wallet.generate()
 console.log(`📍 주소: ${newWallet.address}`)
 console.log(`🔑 시드: ${newWallet.seed}`)
@@ -115,8 +114,7 @@ console.log(`🔑 시드: ${newWallet.seed}`)
 * XRPL의 Wallet 클래스는 키쌍(PublicKey/PrivateKey)로 구성된 지갑을 생성 또는 복원하는 유틸리티입니다.
 * Wallet.fromSeed/fromSecret()은 특정 시드로부터 지갑을 생성합니다.
 * Wallet.generate()는 랜덤 시드로 새 지갑을 생성합니다.
-* Wallet.fromEntropy/fromMnemonic은 랜덤 바이트의 엔트로피/니모닉으로부터 생성합니다. 이 방법은 비권장합니다.
-* 위 코드에서는 하드코딩된 Seed를 Wallet.fromSeed()를 통해 불러와 admin의 지갑을, Wallet.generate()로 user의 지갑을 생성합니다. 
+* Wallet.fromEntropy/fromMnemonic은 랜덤 바이트의 엔트로피/니모닉으로부터 생성합니다. 이 방법은 보안상 비권장됩니다.
 
 ### 계정 활성화(Payment)
 - [XRPL 공식 Payment 트랜잭션](https://xrpl.org/payment.html)
