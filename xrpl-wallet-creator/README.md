@@ -86,7 +86,7 @@ cp .env.example .env # 환경변수 파일 생성 후 값 입력
 ---
 ⭐**시작하기에 앞서, XRPL testnet,devnet에서 지갑을 생성한 적이 없다면 [XRP Faucet](https://xrpl.org/xrp-testnet-faucet.html)에서 새 지갑과 토큰 발급(발급 동시에 계정 활성화)**
 
-⭐**xrpl.js에서는 Client.fundWallet()을 통해 코드 자체적으로도 faucet 기능을 사용할 수 있습니다**
+⭐**xrpl.js에서는 Client.fundWallet()을 통해 코드 자체적으로도 faucet 기능을 사용할 수 있습니다.**
 
 ⭐**아래 핵심 코드에서 admin 지갑은 [XRP Faucet](https://xrpl.org/xrp-testnet-faucet.html)에서 미리 발급받은 지갑이라고 보시면 됩니다.**
 
@@ -101,7 +101,7 @@ await client.connect()
 * XRPL은 HTTP가 아니라 WebSocket(wss://)으로 통신하므로, Client 연결이 필요합니다.
 * 트랜잭션을 보내기 전에는 await client.connect()를 반드시 호출해야 합니다.
 * Client 객체는 connect() 후 자동으로 WebSocket을 유지하므로, 트랜잭션 수행이 끝났다면 await client.disconnect()를 호출해 연결을 종료하는 것이 좋습니다.
-* 
+  
 ### 지갑 생성(Wallet)
 - [XRPL Ledger : xrpl.js - Wallet](https://js.xrpl.org/classes/Wallet.html)
 
