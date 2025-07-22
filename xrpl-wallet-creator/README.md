@@ -19,7 +19,7 @@ XRPL(XRP Ledger)에서 발행한 스테이블코인(IOU)을 Axelar Interchain To
 6. [Axelar 핵심 코드 및 설명](#Axelar-핵심-코드-및-설명)
     - [크로스체인 전송 관련 트랜잭션](#크로스체인-전송-관련-트랜잭션)
 7. [참고 자료/공식 문서](#참고-자료공식-문서)
-8. [주의사항](#주의사항)
+8. [⚠️주의사항(Gotcha & Tips)](#⚠️주의사항Gotcha-&-tips)  
 9. [라이선스](#라이선스)
 ---
 ## 기술 스택
@@ -401,8 +401,29 @@ const paymentTx = {
 - [XRPL TrustSet 트랜잭션](https://xrpl.org/trustset.html)
 - [Axelar 공식 문서: XRPL ↔ EVM](https://docs.axelar.dev/dev/xrpl)
 
-## 🐛 문제 해결
-
+## ⚠️주의사항(Gotcha & Tips)
+# JS → TS 변환 시 주의사항
+1. XRPL 트랜잭션 응답의 meta 타입가드
+JS 예제에서는 다음과 같이 바로 접근해도 문제없지만:
+```js
+    if (result.result.meta?.TransactionResult === 'tesSUCCESS') {
+      console.log('✅ 계정 활성화 완료')
+    }
+```
+TS로 개발할 때는 meta가 string일 수도 있고 object일 수도 있기 때문에, 아래와 같이 타입가드를 꼭 추가해야 합니다:
+```ts
+if (
+  typeof result.result.meta === 'object' &&
+  result.result.meta !== null &&
+  'TransactionResult' in result.result.meta
+) {
+  if (result.result.meta.TransactionResult === 'tesSUCCESS') {
+    console.log('✅ 계정 활성화 완료')
+  }
+}
+```
+* JS는 동적 타입이라 런타임에만 에러가 나지만, TS는 정적 타입 검사로 컴파일 타임에 오류를 잡아줌.
+* XRPL 라이브러리 타입 정의상 meta가 string일 수도 있어서, 타입가드 없이는 컴파일 에러 발생.
 ### 일반적인 오류
 
 1. **TypeScript 컴파일 오류**
