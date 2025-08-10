@@ -4,14 +4,12 @@
 각 기능(Amendment/기본 트랜잭션) 별로 폴더를 나누고, 해당 기능을 활용하는 **짧고 명확한 시나리오 기반 코드** 제공  
 복잡한 구현보다 직관적이고 학습 중심적인 코드 예시 제공에 초점을 맞춤.  
 해커톤 참가자 XRPL 개발 입문자가 XRPL 주요 기능을 빠르게 이해하고 응용할 수 있는 **학습 자료**로 활용되도록 설계  
-- **언어**: TypeScript
-- **라이브러리**: xrpl.js
 
 ---
-🌐 네트워크 / 버전 정보
+## 🌐 네트워크 / 버전 정보
 네트워크: XRPL Devnet (wss://s.devnet.rippletest.net:51233)
 
-rippled 버전: Server/serverInfo.ts 실행 시 출력 (예: 2.5.0)
+rippled 버전: 2.5.0
 
 xrpl.js 버전: package.json 참조
 
