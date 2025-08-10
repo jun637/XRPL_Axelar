@@ -1,251 +1,166 @@
-# XRPL ↔ Axelar 크로스체인 전송 시스템
+ ## ✅ 목적
 
-이 프로젝트는 XRPL(리플)과 Ethereum 간의 크로스체인 토큰 전송을 Axelar 네트워크를 통해 구현한 시스템입니다.
-
-## 🚀 주요 기능
-
-- **Admin → User XRP 발행**: 관리자가 사용자에게 XRP 발행
-- **User → Axelar Gateway 전송**: 사용자가 Axelar Gateway로 XRP 전송
-- **ITS(Interchain Token Service) 토큰화**: XRP를 이더리움 네트워크로 토큰화 전송
-- **실시간 전송 상태 모니터링**
-- **완전한 전송 검증 및 리포트 생성**
-
-## 📁 프로젝트 구조
-
-```
-XRPL_Axelar_test/
-├── xrpl-wallet-creator/          # 메인 프로젝트 디렉토리
-│   ├── step1_xrpl_connection.ts          # XRPL 연결 및 지갑 로드
-│   ├── step2_balance_check.ts            # Admin/User 잔액 확인
-│   ├── step3_xrpl_to_axelar.ts           # Admin → User XRP 발행
-│   ├── step4_axelar_gateway_processing.ts # User → Axelar Gateway 전송
-│   ├── step5_its_cross_chain_transfer.ts # ITS 토큰 등록 확인 및 크로스체인 전송
-│   ├── step6_gmp_message_transmission.ts # GMP 메시지 전송
-│   ├── step7_its_contract_execution.ts   # ITS 컨트랙트 실행
-│   ├── step8_final_verification.ts       # 최종 확인
-│   ├── run-complete-transfer.ts          # 전체 실행 스크립트
-│   └── README.md                         # 상세 사용법 및 설정 가이드
-└── README.md                    # 이 파일
-```
-
-## 🎯 빠른 시작
-
-```bash
-# 프로젝트 클론
-git clone <repository-url>
-cd XRPL_Axelar_test/xrpl-wallet-creator
-
-# 의존성 설치
-npm install
-
-# 전체 크로스체인 전송 실행
-npm run complete-transfer
-```
-
-## 📖 상세 가이드
-
-**설치, 설정, 사용법 등 상세한 내용은 [xrpl-wallet-creator/README.md](./xrpl-wallet-creator/README.md)를 참조하세요.**
-
-## 🔧 기술 스택
-
-- **Blockchain**: XRPL, Ethereum, Axelar
-- **Language**: TypeScript
-- **Libraries**: 
-  - `xrpl`: XRPL 클라이언트
-  - `ethers`: Ethereum 인터페이스
-  - `@axelar-network/axelarjs-sdk`: Axelar SDK
-  - `@axelar-network/interchain-token-service`: ITS 서비스
-
-## 💻 XRPL 핵심 코드 예시
-
-### 🔌 XRPL 연결 및 지갑 로드
-
-```typescript
-import { Client, Wallet } from 'xrpl'
-
-class XRPLConnection {
-  private client: Client
-  private adminWallet!: Wallet
-  private userWallet!: Wallet
-
-  constructor() {
-    // XRPL 클라이언트 초기화
-    this.client = new Client('wss://s.altnet.rippletest.net:51233')
-  }
-
-  async connect(): Promise<void> {
-    console.log('🔌 XRPL 테스트넷에 연결 중...')
-    
-    // 1. 클라이언트 연결
-    await this.client.connect()
-    
-    // 2. 연결 상태 확인
-    const serverInfo = await this.client.request({
-      command: 'server_info'
-    })
-    
-    console.log('✅ XRPL 서버 정보:', {
-      complete_ledgers: serverInfo.result.info.complete_ledgers,
-      server_state: serverInfo.result.info.server_state,
-      validated_ledger: serverInfo.result.info.validated_ledger
-    })
-  }
-
-  async loadWallets(): Promise<void> {
-    // 1. 환경변수에서 시드 로드
-    const adminSeed = process.env.ADMIN_SEED
-    const userSeed = process.env.USER_SEED
-    
-    // 2. 지갑 생성 및 검증
-    this.adminWallet = Wallet.fromSeed(adminSeed!)
-    this.userWallet = Wallet.fromSeed(userSeed!)
-    
-    // 3. 지갑 주소 유효성 검사
-    const adminAddress = this.adminWallet.address
-    const userAddress = this.userWallet.address
-    
-    if (!adminAddress.startsWith('r') || !userAddress.startsWith('r')) {
-      throw new Error('잘못된 XRPL 주소 형식입니다')
-    }
-  }
-}
-```
-
-### 🆕 새 지갑 생성 및 계정 활성화
-
-```typescript
-async createNewWallet(): Promise<{wallet: Wallet, address: string, seed: string}> {
-  // 1. 새 지갑 생성
-  const newWallet = Wallet.generate()
-  console.log(`📍 주소: ${newWallet.address}`)
-  console.log(`🔑 시드: ${newWallet.seed}`)
-  
-  // 2. 계정 활성화 (20 XRP 펀딩)
-  const fundTx = {
-    TransactionType: 'Payment',
-    Account: this.adminWallet.address, // Admin이 펀딩
-    Destination: newWallet.address,
-    Amount: '20000000', // 20 XRP in drops
-    Fee: '12'
-  }
-  
-  const prepared = await this.client.autofill(fundTx)
-  const signed = this.adminWallet.sign(prepared)
-  const result = await this.client.submitAndWait(signed.tx_blob)
-  
-  if (result.result.meta?.TransactionResult === 'tesSUCCESS') {
-    console.log('✅ 계정 활성화 완료')
-  }
-  
-  return {
-    wallet: newWallet,
-    address: newWallet.address,
-    seed: newWallet.seed!
-  }
-}
-```
-
-### ⚙️ 계정 설정 트랜잭션
-
-```typescript
-async configureAccount(wallet: Wallet): Promise<void> {
-  // 1. AccountSet 트랜잭션 (계정 속성 설정)
-  const accountSetTx = {
-    TransactionType: 'AccountSet',
-    Account: wallet.address,
-    Domain: '736F6D65646F6D61696E2E636F6D', // hex("somedomain.com")
-    EmailHash: 'F939A06C3C4B3C4B3C4B3C4B3C4B3C4B3C4B3C4B', // 이메일 해시
-    MessageKey: '03AB40A0490F9B7ED8DF29D246BF2D6269820A0EE7742ACDD457BEA7C7D0931EDB', // 메시지 키
-    TransferRate: 0, // 전송 수수료율 (0 = 수수료 없음)
-    TickSize: 5, // 가격 틱 크기
-    Fee: '12'
-  }
-  
-  const prepared = await this.client.autofill(accountSetTx)
-  const signed = wallet.sign(prepared)
-  const result = await this.client.submitAndWait(signed.tx_blob)
-  
-  if (result.result.meta?.TransactionResult === 'tesSUCCESS') {
-    console.log('✅ AccountSet 설정 완료')
-  }
-}
-```
-
-### 🔐 멀티서명 설정
-
-```typescript
-async setupMultiSign(wallet: Wallet, signerAccounts: string[]): Promise<void> {
-  // 1. SignerListSet 트랜잭션
-  const signerListTx = {
-    TransactionType: 'SignerListSet',
-    Account: wallet.address,
-    SignerQuorum: 2, // 서명자 중 2명이 서명해야 함
-    SignerEntries: signerAccounts.map((account, index) => ({
-      SignerEntry: {
-        Account: account,
-        SignerWeight: 1
-      }
-    })),
-    Fee: '12'
-  }
-  
-  const prepared = await this.client.autofill(signerListTx)
-  const signed = wallet.sign(prepared)
-  const result = await this.client.submitAndWait(signed.tx_blob)
-  
-  if (result.result.meta?.TransactionResult === 'tesSUCCESS') {
-    console.log('✅ 멀티서명 설정 완료')
-    console.log(`👥 서명자: ${signerAccounts.join(', ')}`)
-    console.log(`📊 필요 서명 수: 2`)
-  }
-}
-```
-
-### 🧹 계정 삭제
-
-```typescript
-async deleteAccount(wallet: Wallet, destinationAddress: string): Promise<void> {
-  // AccountDelete 트랜잭션 (XRP 2.0+)
-  const deleteTx = {
-    TransactionType: 'AccountDelete',
-    Account: wallet.address,
-    Destination: destinationAddress, // 남은 XRP를 받을 주소
-    Fee: '5000000' // 5 XRP (계정 삭제 수수료)
-  }
-  
-  const prepared = await this.client.autofill(deleteTx)
-  const signed = wallet.sign(prepared)
-  const result = await this.client.submitAndWait(signed.tx_blob)
-  
-  if (result.result.meta?.TransactionResult === 'tesSUCCESS') {
-    console.log('✅ 계정 삭제 완료')
-    console.log(`💰 남은 XRP가 ${destinationAddress}로 전송됨`)
-  }
-}
-```
-
-## 🔄 전송 흐름
-
-```
-Admin 지갑 → User 지갑 (XRP 발행)
-     ↓
-User 지갑 → Axelar Gateway (크로스체인 전송)
-     ↓
-Axelar Gateway → ITS (토큰화)
-     ↓
-ITS → Ethereum (토큰화된 XRP 전달)
-```
-
-## 🚨 주의사항
-
-- 이 프로젝트는 **테스트넷**용으로 설계되었습니다
-- 실제 자금을 사용하기 전에 충분한 테스트를 진행하세요
-- 개인키는 절대 공개하지 마세요
-
-## 📄 라이선스
-
-이 프로젝트는 MIT 라이선스 하에 배포됩니다.
+- **각 기능(Amendment/기본 트랜잭션)** 별로 **폴더를 나누고**, 해당 기능을 활용하는 **짧고 명확한 시나리오 기반 코드** 제공
+- 복잡한 구현보다 **직관적이고 학습 중심적인 코드 예시** 제공에 초점을 맞춤. 해커톤 참가자 또는 초심자 개발자가 XRPL 주요 기능을 **빠르게 이해하고 응용할 수 있는 학습 자료**로 활용되도록 설계
+- **코드는 TypeScript 기반**, `xrpl.js` 라이브러리 기반
 
 ---
 
-**⚠️**: 이 프로젝트는 테스트 목적으로 제작되었습니다. 
+## 🗂️ 전체 디렉토리 구조
+
+```bash
+xrpl/
+├── Wallet/
+│ ├── createNewWallet.ts
+│ ├── faucet.ts
+│ ├── loadWallets.ts
+│ └── WalletInfo.ts
+│
+├── Payment/
+│ ├── sendIOU.ts
+│ └── sendXRP.ts
+│
+├── TrustSet/
+├ ├── requireAuth.ts
+│ └── TrustSet.ts
+│
+├── AccountSet/
+│ └── AccountSet.ts
+│
+├── Credential/
+│ ├── acceptCredential.ts
+│ ├── checkCredential.ts
+│ ├── createCredential.ts
+│ └── deleteCredential.ts
+│
+├── PermissionedDEX/
+│ ├── bookOffers.ts
+│ ├── cancelOffer.ts
+│ └── createPermissionedOffer.ts
+│
+├── PermissionedDomains/
+│ ├── AcceptedCredentials.ts
+│ ├── createDomain.ts
+│ └── deleteDomain.ts
+│
+├── TokenEscrow/
+│ ├── escrowCancel.ts
+│ ├── escrowCreateIOU.ts
+│ ├── escrowCreateMPT.ts
+│ └── escrowFinish.ts
+│
+├── MPTokensV1/
+│ ├── authorizeHolder.ts
+│ ├── createIssuance.ts
+│ ├── destroyIssuance.ts
+│ ├── sendMPT.ts
+│ └── setIssuance.ts
+│
+├── Batch/
+│ ├── AllOrNothing.ts
+│ ├── Independent.ts
+│ ├── OnlyOne.ts
+│ └── UntilFailure.ts
+│
+├── Server/
+│ └── serverInfo.ts
+│
+```
+
+## 📦 주요 기능별 시나리오
+
+| 폴더명 | 주요 내용 | 시나리오 |
+| --- | --- | --- |
+| **Wallet** | 지갑 생성, 기존 지갑 불러오기 및 balance, trustline, flag 조회 | 지갑 생성 → 시드 출력 → 시드로 기존 지갑 로드 → 잔액·TrustLine·Flags 조회 |
+| **Payment** | XRP/IOU 전송 |  XRP 전송 → IOU 전송(사전 조건: TrustLine 설정) |
+| **TrustSet** | TrustLine 설정 (사용자 측) 및 발행자 승인(RequireAuth 시) | 사용자(User) → TrustLine 생성 → 발행자(Admin) → tfSetAuth 승인 |
+| **AccountSet** | 계정 설정 변경 (플래그) | Admin → RequireAuth 플래그 설정 → 상태 조회 |
+| **Credential** | 온체인 신원/권한 증명 | 발급자(Admin) → CredentialCreate → 피발급자(User) → CredentialAccept → 조회(account_objects) → 삭제(CredentialDelete) |
+| **PermissionedDex** | 도메인 규칙 적용된 DEX 거래 | (사전 조건: AcceptedCredentials 충족) → Permissioned Offer 생성 → book_offers로 도메인 오더북 조회 → OfferCancel |
+| **PermissionedDomains** | 도메인 생성·정책 관리 | Admin → 도메인 생성 → AcceptedCredentials 정책 등록/변경 → 해당 도메인에 맞는 계정만 거래 가능 |
+| **TokenEscrow** | 토큰 예치·해제 | EscrowCreate(FinishAfter/CancelAfter 지정) → 기간 도래 후 EscrowFinish 또는 EscrowCancel |
+| **MPtokensV1** | 발행자 승인형 토큰 발행/전송 | Issuance 생성 → Holder 승인(MPTokenAuthorize) → 토큰 전송 → 승인 해제(tfMPTUnauthorize) |
+| **Batch** | 여러 트랜잭션을 하나의 Batch로 처리 | 단일 계정: ALLORNOTHING / ONLYONE / UNTILFAILURE / INDEPENDENT 모드별 Batch 트랜잭션 실행 |
+
+## 💬 기능(폴더)별 README
+
+[XRPL 연결부 - 공통](https://www.notion.so/XRPL-241898c680bf80ed8b76d452a3abd1ad?pvs=21)
+
+[Wallet](https://www.notion.so/Wallet-241898c680bf80ee8865f907a8f6955e?pvs=21)
+
+[Payment](https://www.notion.so/Payment-241898c680bf80d293aaff549535a2b7?pvs=21)
+
+[TrustSet](https://www.notion.so/TrustSet-241898c680bf8004a0efe89986fb6060?pvs=21)
+
+[AccountSet](https://www.notion.so/AccountSet-241898c680bf80f28deec45dbe9f29ca?pvs=21)
+
+[PermissionedDomains](https://www.notion.so/PermissionedDomains-241898c680bf8003a61aee9d1f87244c?pvs=21)
+
+[Credential
+](https://www.notion.so/Credential-241898c680bf802eadd0dcf5bdfc0ded?pvs=21)
+
+[PermissionedDex](https://www.notion.so/PermissionedDex-241898c680bf8022a574eba4f4d434a5?pvs=21)
+
+[MPtokensV1](https://www.notion.so/MPtokensV1-241898c680bf801694fffcf16c9ef20c?pvs=21)
+
+[TokenEscrow](https://www.notion.so/TokenEscrow-241898c680bf80deb2a7db0f1c960696?pvs=21)
+
+[Batch](https://www.notion.so/Batch-241898c680bf8093b815fc83403d82ad?pvs=21)
+
+### XRPL Devnet Explorer
+
+https://devnet.xrpl.org/
+
+실행 명령어 모음
+
+```powershell
+# Credential
+npx ts-node xrpl/Credential/createCredential.ts
+npx ts-node xrpl/Credential/acceptCredential.ts
+npx ts-node xrpl/Credential/checkCredential.ts
+npx ts-node xrpl/Credential/deleteCredential.ts
+
+# PermissionedDomains
+npx ts-node xrpl/PermissionedDomains/createDomain.ts
+npx ts-node xrpl/PermissionedDomains/deleteDomain.ts
+
+# PermissionedDEX
+npx ts-node xrpl/PermissionedDEX/createPermissionedOffer.ts
+npx ts-node xrpl/PermissionedDEX/cancelOffer.ts
+npx ts-node xrpl/PermissionedDEX/bookOffers.ts
+
+# TrustSet
+npx ts-node xrpl/TrustSet/TrustSet.ts
+npx ts-node xrpl/TrustSet/authorizeTrustLine.ts
+
+# AccountSet
+npx ts-node xrpl/AccountSet/AccountSet.ts
+
+# Wallet
+npx ts-node xrpl/Wallet/createNewWallet.ts
+npx ts-node xrpl/Wallet/faucet.ts
+npx ts-node xrpl/Wallet/WalletInfo.ts
+npx ts-node xrpl/Wallet/loadWallets.ts
+
+# Server
+npx ts-node xrpl/Server/serverInfo.ts
+
+# MPTokensV1
+npx ts-node xrpl/MPTokensV1/createIssuance.ts
+npx ts-node xrpl/MPTokensV1/setIssuance.ts   # 사용법: lock|unlock [holderAddress]
+npx ts-node xrpl/MPTokensV1/authorizeHolder.ts
+npx ts-node xrpl/MPTokensV1/sendMPT.ts
+npx ts-node xrpl/MPTokensV1/destroyIssuance.ts
+
+# TokenEscrow
+~~npx ts-node xrpl/TokenEscrow/escrowCreateIOU.ts~~
+npx ts-node xrpl/TokenEscrow/escrowCreateMPT.ts
+npx ts-node xrpl/TokenEscrow/escrowFinish.ts
+npx ts-node xrpl/TokenEscrow/escrowCancel.ts
+
+# Batch
+npx ts-node xrpl/Batch/AllOrNothing.ts
+npx ts-node xrpl/Batch/Independent.ts
+npx ts-node xrpl/Batch/OnlyOne.ts
+npx ts-node xrpl/Batch/UntilFailure.ts
+```
