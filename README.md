@@ -1,10 +1,42 @@
- ## ✅ 목적
+# XRPL 핵심 기능별 샘플 코드
 
-- **각 기능(Amendment/기본 트랜잭션)** 별로 **폴더를 나누고**, 해당 기능을 활용하는 **짧고 명확한 시나리오 기반 코드** 제공
-- 복잡한 구현보다 **직관적이고 학습 중심적인 코드 예시** 제공에 초점을 맞춤. 해커톤 참가자 또는 초심자 개발자가 XRPL 주요 기능을 **빠르게 이해하고 응용할 수 있는 학습 자료**로 활용되도록 설계
-- **코드는 TypeScript 기반**, `xrpl.js` 라이브러리 기반
+## ✅ 목적
+각 기능(Amendment/기본 트랜잭션) 별로 폴더를 나누고, 해당 기능을 활용하는 **짧고 명확한 시나리오 기반 코드** 제공  
+복잡한 구현보다 직관적이고 학습 중심적인 코드 예시 제공에 초점을 맞춤.  
+해커톤 참가자 XRPL 개발 입문자가 XRPL 주요 기능을 빠르게 이해하고 응용할 수 있는 **학습 자료**로 활용되도록 설계  
+- **언어**: TypeScript
+- **라이브러리**: xrpl.js
 
 ---
+🌐 네트워크 / 버전 정보
+네트워크: XRPL Devnet (wss://s.devnet.rippletest.net:51233)
+
+rippled 버전: Server/serverInfo.ts 실행 시 출력 (예: 2.5.0)
+
+xrpl.js 버전: package.json 참조
+
+Node.js: LTS 권장
+
+---
+## 🚀 Quickstart
+
+```bash
+# 1) 의존성 설치
+npm install
+
+# 2) .env 작성 (Devnet 테스트 전용)
+#   ADMIN_SEED=sEdXXXXXXXXXXXXXXXXX
+#   USER_SEED=sEdYYYYYYYYYYYYYYYYY
+#   USER2_SEED=sEdZZZZZZZZZZZZZZZZ
+#   NEW_SEED=sEdAAAAAAAAAAAAAAAAA (옵션: faucet 테스트용)
+
+# 3) 서버 기능 확인 (선택)
+npx ts-node xrpl/Server/serverInfo.ts
+
+# 4) 예제 실행 (예: 새 지갑 생성 → 펀딩 → 정보 조회)
+npx ts-node xrpl/Wallet/createNewWallet.ts
+npx ts-node xrpl/Wallet/faucet.ts
+npx ts-node xrpl/Wallet/WalletInfo.ts
 
 ## 🗂️ 전체 디렉토리 구조
 
@@ -67,6 +99,20 @@ xrpl/
 │
 ```
 
+---
+## 📖 주요 기능별 README 인덱스
+폴더	설명	README
+Wallet	지갑 생성/펀딩/정보 조회	Wallet/README.md
+Payment	XRP/IOU 전송	Payment/README.md
+TrustSet	TrustLine 설정 및 RequireAuth 승인	TrustSet/README.md
+AccountSet	계정 플래그 설정	AccountSet/README.md
+Credential	온체인 신원/권한 관리	Credential/README.md
+PermissionedDEX	도메인 규칙 기반 DEX 거래	PermissionedDEX/README.md
+PermissionedDomains	도메인 생성/정책 관리	PermissionedDomains/README.md
+TokenEscrow	토큰 예치/해제	TokenEscrow/README.md
+MPTokensV1	발행자 승인형 토큰 발행/전송	MPTokensV1/README.md
+Batch	배치 트랜잭션(AllOrNothing 등)	Batch/README.md
+Server	서버 정보 및 Amendment 지원 확인	Server/README.md
 ## 📦 주요 기능별 시나리오
 
 | 폴더명 | 주요 내용 | 시나리오 |
@@ -81,32 +127,6 @@ xrpl/
 | **TokenEscrow** | 토큰 예치·해제 | EscrowCreate(FinishAfter/CancelAfter 지정) → 기간 도래 후 EscrowFinish 또는 EscrowCancel |
 | **MPtokensV1** | 발행자 승인형 토큰 발행/전송 | Issuance 생성 → Holder 승인(MPTokenAuthorize) → 토큰 전송 → 승인 해제(tfMPTUnauthorize) |
 | **Batch** | 여러 트랜잭션을 하나의 Batch로 처리 | 단일 계정: ALLORNOTHING / ONLYONE / UNTILFAILURE / INDEPENDENT 모드별 Batch 트랜잭션 실행 |
-
----
-## 💬 기능(폴더)별 README(Notion)
-
-[XRPL 연결부 - 공통](https://www.notion.so/XRPL-241898c680bf80ed8b76d452a3abd1ad?pvs=21)
-
-[Wallet](https://www.notion.so/Wallet-241898c680bf80ee8865f907a8f6955e?pvs=21)
-
-[Payment](https://www.notion.so/Payment-241898c680bf80d293aaff549535a2b7?pvs=21)
-
-[TrustSet](https://www.notion.so/TrustSet-241898c680bf8004a0efe89986fb6060?pvs=21)
-
-[AccountSet](https://www.notion.so/AccountSet-241898c680bf80f28deec45dbe9f29ca?pvs=21)
-
-[PermissionedDomains](https://www.notion.so/PermissionedDomains-241898c680bf8003a61aee9d1f87244c?pvs=21)
-
-[Credential
-](https://www.notion.so/Credential-241898c680bf802eadd0dcf5bdfc0ded?pvs=21)
-
-[PermissionedDex](https://www.notion.so/PermissionedDex-241898c680bf8022a574eba4f4d434a5?pvs=21)
-
-[MPtokensV1](https://www.notion.so/MPtokensV1-241898c680bf801694fffcf16c9ef20c?pvs=21)
-
-[TokenEscrow](https://www.notion.so/TokenEscrow-241898c680bf80deb2a7db0f1c960696?pvs=21)
-
-[Batch](https://www.notion.so/Batch-241898c680bf8093b815fc83403d82ad?pvs=21)
 
 ---
 ### XRPL Devnet Explorer
