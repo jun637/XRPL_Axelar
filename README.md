@@ -34,7 +34,7 @@ npx ts-node xrpl/Server/serverInfo.ts
 npx ts-node xrpl/Wallet/createNewWallet.ts
 npx ts-node xrpl/Wallet/faucet.ts
 npx ts-node xrpl/Wallet/WalletInfo.ts
-
+```
 ---
 ## 🗂️ 전체 디렉토리 구조
 
