@@ -101,32 +101,20 @@ xrpl/
 
 ---
 ## 📖 주요 기능별 README 인덱스
-폴더	설명	README
-Wallet	지갑 생성/펀딩/정보 조회	Wallet/README.md
-Payment	XRP/IOU 전송	Payment/README.md
-TrustSet	TrustLine 설정 및 RequireAuth 승인	TrustSet/README.md
-AccountSet	계정 플래그 설정	AccountSet/README.md
-Credential	온체인 신원/권한 관리	Credential/README.md
-PermissionedDEX	도메인 규칙 기반 DEX 거래	PermissionedDEX/README.md
-PermissionedDomains	도메인 생성/정책 관리	PermissionedDomains/README.md
-TokenEscrow	토큰 예치/해제	TokenEscrow/README.md
-MPTokensV1	발행자 승인형 토큰 발행/전송	MPTokensV1/README.md
-Batch	배치 트랜잭션(AllOrNothing 등)	Batch/README.md
-Server	서버 정보 및 Amendment 지원 확인	Server/README.md
-## 📦 주요 기능별 시나리오
 
-| 폴더명 | 주요 내용 | 시나리오 |
-| --- | --- | --- |
-| **Wallet** | 지갑 생성, 기존 지갑 불러오기 및 balance, trustline, flag 조회 | 지갑 생성 → 시드 출력 → 시드로 기존 지갑 로드 → 잔액·TrustLine·Flags 조회 |
-| **Payment** | XRP/IOU 전송 |  XRP 전송 → IOU 전송(사전 조건: TrustLine 설정) |
-| **TrustSet** | TrustLine 설정 (사용자 측) 및 발행자 승인(RequireAuth 시) | 사용자(User) → TrustLine 생성 → 발행자(Admin) → tfSetAuth 승인 |
-| **AccountSet** | 계정 설정 변경 (플래그) | Admin → RequireAuth 플래그 설정 → 상태 조회 |
-| **Credential** | 온체인 신원/권한 증명 | 발급자(Admin) → CredentialCreate → 피발급자(User) → CredentialAccept → 조회(account_objects) → 삭제(CredentialDelete) |
-| **PermissionedDex** | 도메인 규칙 적용된 DEX 거래 | (사전 조건: AcceptedCredentials 충족) → Permissioned Offer 생성 → book_offers로 도메인 오더북 조회 → OfferCancel |
-| **PermissionedDomains** | 도메인 생성·정책 관리 | Admin → 도메인 생성 → AcceptedCredentials 정책 등록/변경 → 해당 도메인에 맞는 계정만 거래 가능 |
-| **TokenEscrow** | 토큰 예치·해제 | EscrowCreate(FinishAfter/CancelAfter 지정) → 기간 도래 후 EscrowFinish 또는 EscrowCancel |
-| **MPtokensV1** | 발행자 승인형 토큰 발행/전송 | Issuance 생성 → Holder 승인(MPTokenAuthorize) → 토큰 전송 → 승인 해제(tfMPTUnauthorize) |
-| **Batch** | 여러 트랜잭션을 하나의 Batch로 처리 | 단일 계정: ALLORNOTHING / ONLYONE / UNTILFAILURE / INDEPENDENT 모드별 Batch 트랜잭션 실행 |
+| 폴더 | 설명 | README |
+|------|------|--------|
+| Wallet | 지갑 생성/펀딩/정보 조회 | [Wallet/README.md](xrpl/Wallet/README.md) |
+| Payment | XRP/IOU 전송 | [Payment/README.md](xrpl/Payment/README.md) |
+| TrustSet | TrustLine 설정 및 RequireAuth 승인 | [TrustSet/README.md](xrpl/TrustSet/README.md) |
+| AccountSet | 계정 플래그 설정 | [AccountSet/README.md](xrpl/AccountSet/README.md) |
+| Credential | 온체인 신원/권한 관리 | [Credential/README.md](xrpl/Credential/README.md) |
+| PermissionedDEX | 도메인 규칙 기반 DEX 거래 | [PermissionedDEX/README.md](xrpl/PermissionedDEX/README.md) |
+| PermissionedDomains | 도메인 생성/정책 관리 | [PermissionedDomains/README.md](xrpl/PermissionedDomains/README.md) |
+| TokenEscrow | 토큰 예치/해제 | [TokenEscrow/README.md](xrpl/TokenEscrow/README.md) |
+| MPTokensV1 | 발행자 승인형 토큰 발행/전송 | [MPTokensV1/README.md](xrpl/MPTokensV1/README.md) |
+| Batch | 배치 트랜잭션(AllOrNothing 등) | [Batch/README.md](xrpl/Batch/README.md) |
+| Server | 서버 정보 및 Amendment 지원 확인 | [Server/README.md](xrpl/Server/README.md) |
 
 ---
 ### XRPL Devnet Explorer
