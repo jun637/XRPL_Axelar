@@ -1,30 +1,49 @@
-import dotenv from 'dotenv'
-import path from 'path'
-import { Client, Wallet } from 'xrpl'
+import dotenv from "dotenv"
+import path from "path"
+import { Client, Wallet } from "xrpl"
 
-dotenv.config({ path: path.join(__dirname, '..', '.env') })
+dotenv.config({ path: path.join(__dirname, "..", ".env") })
 
-export async function Faucet() {
-  const client = new Client('wss://s.devnet.rippletest.net:51233')
+export async function faucetAll() {
+  const client = new Client("wss://s.devnet.rippletest.net:51233")
   await client.connect()
+
   try {
-    // 시드로 지갑 불러오기
-    const newWalletSeed = process.env.USER2_SEED
-    if (!newWalletSeed) {
-      throw new Error('WALLET_SEED 환경변수가 설정되지 않았습니다.')
+    // Admin
+    if (process.env.ADMIN_SEED) {
+      const adminWallet = Wallet.fromSeed(process.env.ADMIN_SEED.trim())
+      await client.fundWallet(adminWallet)
+      console.log(`✅ ADMIN (${adminWallet.address}) 계정 활성화 완료`)
+    } else {
+      console.warn("⚠️ ADMIN_SEED 환경변수 없음")
     }
-    const newWallet = Wallet.fromSeed(newWalletSeed.trim())
-    // 펀딩
-    const fundedWallet = await client.fundWallet(newWallet)
-    console.log(` ${fundedWallet.wallet.address} 계정 활성화 완료`)
-  } catch (error) {
-    console.error('❌ 계정 활성화 실패:', error)
+
+    // User
+    if (process.env.USER_SEED) {
+      const userWallet = Wallet.fromSeed(process.env.USER_SEED.trim())
+      await client.fundWallet(userWallet)
+      console.log(`✅ USER (${userWallet.address}) 계정 활성화 완료`)
+    } else {
+      console.warn("⚠️ USER_SEED 환경변수 없음")
+    }
+
+    // User2
+    if (process.env.USER2_SEED) {
+      const user2Wallet = Wallet.fromSeed(process.env.USER2_SEED.trim())
+      await client.fundWallet(user2Wallet)
+      console.log(`✅ USER2 (${user2Wallet.address}) 계정 활성화 완료`)
+    } else {
+      console.warn("⚠️ USER2_SEED 환경변수 없음")
+    }
+
+  } catch (err) {
+    console.error("❌ 계정 활성화 중 오류:", err)
   } finally {
     await client.disconnect()
-    console.log('🔄 연결 종료')
+    console.log("🔄 연결 종료")
   }
 }
 
 if (require.main === module) {
-  Faucet()
+  faucetAll()
 }
