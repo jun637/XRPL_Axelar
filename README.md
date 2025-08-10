@@ -22,7 +22,11 @@ Node.js: LTS 권장
 # 1) 의존성 설치
 npm install
 
-# 2) .env 작성 (Devnet 테스트 전용)
+# 2) 필요한 지갑(Admin,User,User2 - 3개) 생성 후 출력되는 시드 .env에 기록
+
+npx ts-node xrpl/Wallet/createNewWallet.ts - 3번 호출
+
+#   .env 파일 예시
 #   ADMIN_SEED=sEdXXXXXXXXXXXXXXXXX
 #   USER_SEED=sEdYYYYYYYYYYYYYYYYY
 #   USER2_SEED=sEdZZZZZZZZZZZZZZZZ
@@ -30,8 +34,8 @@ npm install
 # 3) 서버 기능 확인 (선택)
 npx ts-node xrpl/Server/serverInfo.ts
 
-# 4) 예제 실행 (예: 새 지갑 생성 → 펀딩 → 정보 조회)
-npx ts-node xrpl/Wallet/createNewWallet.ts
+# 4) 예제 실행 (예: 지갑 로드 → 펀딩 → 정보 조회)
+npx ts-node xrpl/Wallet/LoadWallet.ts
 npx ts-node xrpl/Wallet/faucet.ts
 npx ts-node xrpl/Wallet/WalletInfo.ts
 
