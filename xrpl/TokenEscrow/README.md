@@ -47,7 +47,7 @@ TokenEscrow는 **XRPL의 기존 XRP 전용 Escrow 기능을 확장**해,
     - Source가 RequireAuth 토큰이면 사전 승인 필요
     - Source 잔액·Trustline·Authorize 상태 정상
 
-```json
+```tsx
 const tx: Transaction = {
       TransactionType: "EscrowCreate",
       Account: user.address,              // 소스 = User
@@ -154,3 +154,4 @@ const tx: Transaction = {
 }
 
 ```
+
