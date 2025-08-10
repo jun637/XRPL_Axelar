@@ -52,7 +52,6 @@ const tx = {
   URI: toHex("https://example.com/credentials/kyc/user")
 }
 
-// 실행: npx ts-node xrpl/Credential/createCredential.ts
 
 ```
 
@@ -79,7 +78,6 @@ const tx = {
   CredentialType: toHex("KYC")
 }
 
-// 실행: npx ts-node xrpl/Credential/acceptCredential.ts
 
 ```
 
@@ -102,7 +100,6 @@ const creds = (r.result.account_objects || []).filter(
   (o: any) => o.LedgerEntryType === "Credential"
 )
 
-// 실행: npx ts-node xrpl/Credential/checkCredential.ts
 
 ```
 
@@ -132,8 +129,8 @@ const tx = {
   CredentialType: toHex("KYC")
 }
 
-// 실행: npx ts-node xrpl/Credential/deleteCredential.ts
 
 ```
 
 - 도메인 정책이 “보유 중” Credential을 요구하는 경우, 삭제 후엔 접근이 제한될 수 있음.
+
