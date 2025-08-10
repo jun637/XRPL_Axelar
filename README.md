@@ -82,7 +82,8 @@ xrpl/
 | **MPtokensV1** | 발행자 승인형 토큰 발행/전송 | Issuance 생성 → Holder 승인(MPTokenAuthorize) → 토큰 전송 → 승인 해제(tfMPTUnauthorize) |
 | **Batch** | 여러 트랜잭션을 하나의 Batch로 처리 | 단일 계정: ALLORNOTHING / ONLYONE / UNTILFAILURE / INDEPENDENT 모드별 Batch 트랜잭션 실행 |
 
-## 💬 기능(폴더)별 README
+---
+## 💬 기능(폴더)별 README(Notion)
 
 [XRPL 연결부 - 공통](https://www.notion.so/XRPL-241898c680bf80ed8b76d452a3abd1ad?pvs=21)
 
@@ -107,10 +108,12 @@ xrpl/
 
 [Batch](https://www.notion.so/Batch-241898c680bf8093b815fc83403d82ad?pvs=21)
 
+---
 ### XRPL Devnet Explorer
 
 https://devnet.xrpl.org/
 
+---
 실행 명령어 모음
 
 ```powershell
