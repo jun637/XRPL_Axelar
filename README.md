@@ -28,7 +28,6 @@ npm install
 #   ADMIN_SEED=sEdXXXXXXXXXXXXXXXXX
 #   USER_SEED=sEdYYYYYYYYYYYYYYYYY
 #   USER2_SEED=sEdZZZZZZZZZZZZZZZZ
-#   NEW_SEED=sEdAAAAAAAAAAAAAAAAA (옵션: faucet 테스트용)
 
 # 3) 서버 기능 확인 (선택)
 npx ts-node xrpl/Server/serverInfo.ts
@@ -38,6 +37,7 @@ npx ts-node xrpl/Wallet/createNewWallet.ts
 npx ts-node xrpl/Wallet/faucet.ts
 npx ts-node xrpl/Wallet/WalletInfo.ts
 
+---
 ## 🗂️ 전체 디렉토리 구조
 
 ```bash
