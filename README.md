@@ -117,11 +117,6 @@ xrpl/
 | Server | 서버 정보 및 Amendment 지원 확인 | [Server/README.md](xrpl/Server/README.md) |
 
 ---
-### XRPL Devnet Explorer
-
-https://devnet.xrpl.org/
-
----
 ### 실행 명령어 모음
 
 ```powershell
@@ -175,3 +170,7 @@ npx ts-node xrpl/Batch/Independent.ts
 npx ts-node xrpl/Batch/OnlyOne.ts
 npx ts-node xrpl/Batch/UntilFailure.ts
 ```
+---
+### XRPL Devnet Explorer(트랜잭션 확인)
+
+https://devnet.xrpl.org/
