@@ -1,41 +1,46 @@
-import dotenv from 'dotenv'
-import path from 'path'
-import { Client, Wallet } from 'xrpl'
+import dotenv from "dotenv"
+import path from "path"
+import { Client, Wallet } from "xrpl"
 
-// xrpl-wallet-creator 폴더의 .env 파일 로드
-dotenv.config({ path: path.join(__dirname, '..', '.env') })
+// .env 로드 (상위 폴더 기준)
+dotenv.config({ path: path.join(__dirname, "..", ".env") })
 
-export async function loadWallets() {
-  const client = new Client('wss://s.devnet.rippletest.net:51233')
+async function loadWallets() {
+  const client = new Client("wss://s.devnet.rippletest.net:51233")
   await client.connect()
+
   try {
-    // 1. 환경변수에서 Admin Seed 로드
-    console.log('환경변수 확인:', {
-      ADMIN_SEED: process.env.ADMIN_SEED,
-      USER_SEED: process.env.USER_SEED
-    })
-    const adminSeed = process.env.ADMIN_SEED
-    if (!adminSeed) {
-      throw new Error('ADMIN_SEED 환경변수가 설정되지 않았습니다.')
+    // 1. 환경변수 확인
+    const ADMIN_SEED = process.env.ADMIN_SEED?.trim()
+    const USER_SEED  = process.env.USER_SEED?.trim()
+    const USER2_SEED = process.env.USER2_SEED?.trim()
+
+    console.log("환경변수 확인:", { ADMIN_SEED, USER_SEED, USER2_SEED })
+
+    if (!ADMIN_SEED || !USER_SEED || !USER2_SEED) {
+      throw new Error("환경변수 ADMIN_SEED, USER_SEED, USER2_SEED가 모두 필요합니다.")
     }
-    // 2. Admin 지갑 생성
-    const adminWallet = Wallet.fromSeed(adminSeed.trim())
-    // 3. User 지갑은 새로 생성
-    const userWallet = Wallet.generate()
-    await client.fundWallet(userWallet)
+
+    // 2. Wallet 생성
+    const adminWallet = Wallet.fromSeed(ADMIN_SEED)
+    const userWallet  = Wallet.fromSeed(USER_SEED)
+    const user2Wallet = Wallet.fromSeed(USER2_SEED)
+
+    // 3. 출력
     console.log(`Admin: ${adminWallet.address} | Seed: ${adminWallet.seed}`)
-    console.log(`User: ${userWallet.address} | Seed: ${userWallet.seed}`)
-    console.log(`User PublicKey: ${userWallet.publicKey}`)
-    return { admin: adminWallet, user: userWallet }
-  } catch (error) {
-    console.error('❌ 지갑 로드 실패:', error)
-    throw new Error(`지갑 로드 실패: ${error}`)
+    console.log(`User:  ${userWallet.address} | Seed: ${userWallet.seed}`)
+    console.log(`User2: ${user2Wallet.address} | Seed: ${user2Wallet.seed}`)
+
+    return { admin: adminWallet, user: userWallet, user2: user2Wallet }
+  } catch (err) {
+    console.error("❌ 지갑 로드 실패:", err)
+    throw err
   } finally {
     await client.disconnect()
-    console.log('🔄 연결 종료')
+    console.log("🔄 연결 종료")
   }
 }
 
 if (require.main === module) {
   loadWallets()
-} 
+}
