@@ -56,6 +56,174 @@ npm run complete-transfer
   - `@axelar-network/axelarjs-sdk`: Axelar SDK
   - `@axelar-network/interchain-token-service`: ITS 서비스
 
+## 💻 XRPL 핵심 코드 예시
+
+### 🔌 XRPL 연결 및 지갑 로드
+
+```typescript
+import { Client, Wallet } from 'xrpl'
+
+class XRPLConnection {
+  private client: Client
+  private adminWallet!: Wallet
+  private userWallet!: Wallet
+
+  constructor() {
+    // XRPL 클라이언트 초기화
+    this.client = new Client('wss://s.altnet.rippletest.net:51233')
+  }
+
+  async connect(): Promise<void> {
+    console.log('🔌 XRPL 테스트넷에 연결 중...')
+    
+    // 1. 클라이언트 연결
+    await this.client.connect()
+    
+    // 2. 연결 상태 확인
+    const serverInfo = await this.client.request({
+      command: 'server_info'
+    })
+    
+    console.log('✅ XRPL 서버 정보:', {
+      complete_ledgers: serverInfo.result.info.complete_ledgers,
+      server_state: serverInfo.result.info.server_state,
+      validated_ledger: serverInfo.result.info.validated_ledger
+    })
+  }
+
+  async loadWallets(): Promise<void> {
+    // 1. 환경변수에서 시드 로드
+    const adminSeed = process.env.ADMIN_SEED
+    const userSeed = process.env.USER_SEED
+    
+    // 2. 지갑 생성 및 검증
+    this.adminWallet = Wallet.fromSeed(adminSeed!)
+    this.userWallet = Wallet.fromSeed(userSeed!)
+    
+    // 3. 지갑 주소 유효성 검사
+    const adminAddress = this.adminWallet.address
+    const userAddress = this.userWallet.address
+    
+    if (!adminAddress.startsWith('r') || !userAddress.startsWith('r')) {
+      throw new Error('잘못된 XRPL 주소 형식입니다')
+    }
+  }
+}
+```
+
+### 🆕 새 지갑 생성 및 계정 활성화
+
+```typescript
+async createNewWallet(): Promise<{wallet: Wallet, address: string, seed: string}> {
+  // 1. 새 지갑 생성
+  const newWallet = Wallet.generate()
+  console.log(`📍 주소: ${newWallet.address}`)
+  console.log(`🔑 시드: ${newWallet.seed}`)
+  
+  // 2. 계정 활성화 (20 XRP 펀딩)
+  const fundTx = {
+    TransactionType: 'Payment',
+    Account: this.adminWallet.address, // Admin이 펀딩
+    Destination: newWallet.address,
+    Amount: '20000000', // 20 XRP in drops
+    Fee: '12'
+  }
+  
+  const prepared = await this.client.autofill(fundTx)
+  const signed = this.adminWallet.sign(prepared)
+  const result = await this.client.submitAndWait(signed.tx_blob)
+  
+  if (result.result.meta?.TransactionResult === 'tesSUCCESS') {
+    console.log('✅ 계정 활성화 완료')
+  }
+  
+  return {
+    wallet: newWallet,
+    address: newWallet.address,
+    seed: newWallet.seed!
+  }
+}
+```
+
+### ⚙️ 계정 설정 트랜잭션
+
+```typescript
+async configureAccount(wallet: Wallet): Promise<void> {
+  // 1. AccountSet 트랜잭션 (계정 속성 설정)
+  const accountSetTx = {
+    TransactionType: 'AccountSet',
+    Account: wallet.address,
+    Domain: '736F6D65646F6D61696E2E636F6D', // hex("somedomain.com")
+    EmailHash: 'F939A06C3C4B3C4B3C4B3C4B3C4B3C4B3C4B3C4B', // 이메일 해시
+    MessageKey: '03AB40A0490F9B7ED8DF29D246BF2D6269820A0EE7742ACDD457BEA7C7D0931EDB', // 메시지 키
+    TransferRate: 0, // 전송 수수료율 (0 = 수수료 없음)
+    TickSize: 5, // 가격 틱 크기
+    Fee: '12'
+  }
+  
+  const prepared = await this.client.autofill(accountSetTx)
+  const signed = wallet.sign(prepared)
+  const result = await this.client.submitAndWait(signed.tx_blob)
+  
+  if (result.result.meta?.TransactionResult === 'tesSUCCESS') {
+    console.log('✅ AccountSet 설정 완료')
+  }
+}
+```
+
+### 🔐 멀티서명 설정
+
+```typescript
+async setupMultiSign(wallet: Wallet, signerAccounts: string[]): Promise<void> {
+  // 1. SignerListSet 트랜잭션
+  const signerListTx = {
+    TransactionType: 'SignerListSet',
+    Account: wallet.address,
+    SignerQuorum: 2, // 서명자 중 2명이 서명해야 함
+    SignerEntries: signerAccounts.map((account, index) => ({
+      SignerEntry: {
+        Account: account,
+        SignerWeight: 1
+      }
+    })),
+    Fee: '12'
+  }
+  
+  const prepared = await this.client.autofill(signerListTx)
+  const signed = wallet.sign(prepared)
+  const result = await this.client.submitAndWait(signed.tx_blob)
+  
+  if (result.result.meta?.TransactionResult === 'tesSUCCESS') {
+    console.log('✅ 멀티서명 설정 완료')
+    console.log(`👥 서명자: ${signerAccounts.join(', ')}`)
+    console.log(`📊 필요 서명 수: 2`)
+  }
+}
+```
+
+### 🧹 계정 삭제
+
+```typescript
+async deleteAccount(wallet: Wallet, destinationAddress: string): Promise<void> {
+  // AccountDelete 트랜잭션 (XRP 2.0+)
+  const deleteTx = {
+    TransactionType: 'AccountDelete',
+    Account: wallet.address,
+    Destination: destinationAddress, // 남은 XRP를 받을 주소
+    Fee: '5000000' // 5 XRP (계정 삭제 수수료)
+  }
+  
+  const prepared = await this.client.autofill(deleteTx)
+  const signed = wallet.sign(prepared)
+  const result = await this.client.submitAndWait(signed.tx_blob)
+  
+  if (result.result.meta?.TransactionResult === 'tesSUCCESS') {
+    console.log('✅ 계정 삭제 완료')
+    console.log(`💰 남은 XRP가 ${destinationAddress}로 전송됨`)
+  }
+}
+```
+
 ## 🔄 전송 흐름
 
 ```

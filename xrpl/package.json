@@ -12,7 +12,14 @@
     "step5": "ts-node step6_its_cross_chain_transfer.ts",
     "step6": "ts-node step7_gmp_message_transmission.ts",
     "step7": "ts-node step8_its_contract_execution.ts",
-    "step8": "ts-node step9_final_verification.ts"
+    "step8": "ts-node step9_final_verification.ts",
+    "scenario": "ts-node Wallet/Scenario.ts",
+    "connect": "ts-node Wallet/connect.ts",
+    "loadWallets": "ts-node Wallet/loadWallets.ts",
+    "createNewWallet": "ts-node Wallet/createNewWallet.ts",
+    "configureAccount": "ts-node Wallet/configureAccount.ts",
+    "setupMultiSign": "ts-node Wallet/setupMultiSign.ts",
+    "deleteAccount": "ts-node Wallet/deleteAccount.ts"
   },
   "keywords": ["xrpl", "axelar", "cross-chain", "blockchain"],
   "author": "",
