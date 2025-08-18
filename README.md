@@ -1,4 +1,12 @@
 ---
+## 📑 목차
+- [들어가며](./README.md#들어가며)
+- [🚀 Quickstart](./README.md#-quickstart)
+- [🗂️ 전체 디렉토리 구조](./README.md#-전체-디렉토리-구조)
+- [📂 폴더별 README 바로가기](./README.md#-폴더별-readme-바로가기)
+- [XRPL Devnet Explorer(트랜잭션 확인)](./README.md#xrpl-devnet-explorer트랜잭션-확인)
+- [🌐 네트워크 / 버전](./README.md#-네트워크--버전)
+---
 
 ## 들어가며
 
@@ -14,24 +22,8 @@
 - 각 기능(Amendment/기본 트랜잭션) 별로 폴더를 나누고, 해당 기능을 활용하는 **짧고 명확한 시나리오 기반 코드** 제공
 - 복잡한 구현보다 직관적이고 학습 중심적인 코드 예시 제공에 초점을 맞춤.
 - XRPL 개발 입문자가 XRPL 주요 기능을 빠르게 이해하고 응용할 수 있는 **학습 자료**로 활용되도록 설계
-## 목차
-- [Quickstart](./README.md#-Quickstart)
-- [루트 README.md](./README.md)
 
-## 📂 폴더별 README 바로가기
-
-- [Wallet](./xrpl/Wallet/README.md)
-- [TrustSet](./xrpl/TrustSet/README.md)
-- [TokenEscrow](./xrpl/TokenEscrow/README.md)
-- [Server](./xrpl/Server/README.md)
-- [PermissionedDomains](./xrpl/PermissionedDomains/README.md)
-- [PermissionedDEX](./xrpl/PermissionedDEX/README.md)
-- [Payment](./xrpl/Payment/README.md)
-- [MPTokensV1](./xrpl/MPTokensV1/README.md)
-- [Credential](./xrpl/Credential/README.md)
-- [Batch](./xrpl/Batch/README.md)
-- [AccountSet](./xrpl/AccountSet/README.md)
-
+  
 ---
 
 ### 3. 코드 및 콘솔 출력값의 구조
@@ -252,7 +244,21 @@ xrpl/
 
 ---
 
-[📦 주요 기능(폴더)별 README](https://www.notion.so/24c898c680bf80b2b1d5cb52714c2fbf?pvs=21)
+## 📂 폴더별 README 바로가기
+
+- [Wallet](./xrpl/Wallet/README.md)
+- [TrustSet](./xrpl/TrustSet/README.md)
+- [TokenEscrow](./xrpl/TokenEscrow/README.md)
+- [Server](./xrpl/Server/README.md)
+- [PermissionedDomains](./xrpl/PermissionedDomains/README.md)
+- [PermissionedDEX](./xrpl/PermissionedDEX/README.md)
+- [Payment](./xrpl/Payment/README.md)
+- [MPTokensV1](./xrpl/MPTokensV1/README.md)
+- [Credential](./xrpl/Credential/README.md)
+- [Batch](./xrpl/Batch/README.md)
+- [AccountSet](./xrpl/AccountSet/README.md)
+
+---
 
 ### XRPL Devnet Explorer(트랜잭션 확인)
 
