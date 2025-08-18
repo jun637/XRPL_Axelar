@@ -14,11 +14,23 @@
 - 각 기능(Amendment/기본 트랜잭션) 별로 폴더를 나누고, 해당 기능을 활용하는 **짧고 명확한 시나리오 기반 코드** 제공
 - 복잡한 구현보다 직관적이고 학습 중심적인 코드 예시 제공에 초점을 맞춤.
 - XRPL 개발 입문자가 XRPL 주요 기능을 빠르게 이해하고 응용할 수 있는 **학습 자료**로 활용되도록 설계
-## 문서 모음
+## 목차
 - [Quickstart](./README.md#-Quickstart)
-- [루트 README.md](./XRPL/README.md)
+- [루트 README.md](./README.md)
+
+## 📂 폴더별 README 바로가기
+
 - [Wallet](./xrpl/Wallet/README.md)
+- [TrustSet](./xrpl/TrustSet/README.md)
+- [TokenEscrow](./xrpl/TokenEscrow/README.md)
+- [Server](./xrpl/Server/README.md)
+- [PermissionedDomains](./xrpl/PermissionedDomains/README.md)
+- [PermissionedDEX](./xrpl/PermissionedDEX/README.md)
+- [Payment](./xrpl/Payment/README.md)
 - [MPTokensV1](./xrpl/MPTokensV1/README.md)
+- [Credential](./xrpl/Credential/README.md)
+- [Batch](./xrpl/Batch/README.md)
+- [AccountSet](./xrpl/AccountSet/README.md)
 
 ---
 
