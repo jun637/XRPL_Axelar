@@ -1,5 +1,5 @@
 ---
-📑 목차
+## 📑 목차
 - [들어가며](./README.md#들어가며)
 - [🚀 Quickstart](./README.md#-quickstart)
 - [🗂️ 전체 디렉토리 구조](./README.md#-전체-디렉토리-구조)
