@@ -1,7 +1,7 @@
 
 ## 📑 목차
 ---
-- [개요 (Overview)](./README.md#개요 (Overview))
+- [개요 (Overview)](./README.md#개요-(Overview))
 - [🚀 Quickstart](./README.md#-quickstart)
 - [🗂️ 전체 디렉토리 구조](./README.md#-전체-디렉토리-구조)
 - [📂 폴더별 README 바로가기](./README.md#-폴더별-readme-바로가기)
