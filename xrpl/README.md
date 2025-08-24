@@ -98,27 +98,18 @@ xrpl/
 ```
 ---
 ## 📂 폴더별 README 바로가기
-Wallet
 
-Payment
-
-TrustSet
-
-AccountSet
-
-Credential
-
-PermissionedDEX
-
-PermissionedDomains
-
-TokenEscrow
-
-MPTokensV1
-
-Batch
-
-Server
+- [Wallet](./xrpl/Wallet/README.md)
+- [TrustSet](./xrpl/TrustSet/README.md)
+- [TokenEscrow](./xrpl/TokenEscrow/README.md)
+- [Server](./xrpl/Server/README.md)
+- [PermissionedDomains](./xrpl/PermissionedDomains/README.md)
+- [PermissionedDEX](./xrpl/PermissionedDEX/README.md)
+- [Payment](./xrpl/Payment/README.md)
+- [MPTokensV1](./xrpl/MPTokensV1/README.md)
+- [Credential](./xrpl/Credential/README.md)
+- [Batch](./xrpl/Batch/README.md)
+- [AccountSet](./xrpl/AccountSet/README.md)
 
 ---
 ## XRPL Devnet Explorer
