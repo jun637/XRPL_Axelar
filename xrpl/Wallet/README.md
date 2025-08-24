@@ -1,74 +1,41 @@
-## 1. Wallet
+# Wallet 
+* XRPL 지갑을 **생성 → Devnet 펀딩 → 상태 조회**하는 스크립트 모음입니다.
+  
+---
+## 🎯 시나리오 실행 명령어 및 설명  
 
-**Wallet**은 XRPL 계정을 **생성/로드/펀딩/조회**하기 위한 도구(스크립트 모음)이다.
+# 1. 새 지갑 생성(주소/시드 출력)
+npx ts-node xrpl/Wallet/createNewWallet.ts
+createNewWallet.ts: 새 address/seed 생성(콘솔 출력)
+# 2. 지갑 로드/검증
+npx ts-node xrpl/Wallet/LoadWallet.ts
 
-- **생성**: 새 주소/시드 발급
-- **펀딩(Devnet)**: Faucet으로 활성화(기본 리저브 충족)
-- **조회**: 잔액, 시퀀스, Flags, TrustLines 등
+# 3. Devnet 펀딩(필수)
+npx ts-node xrpl/Wallet/faucet.ts
+faucet.ts: Devnet Faucet으로 활성화(리저브 충족)
+# 4. 지갑 정보 조회(잔액/시퀀스/TrustLines 등)
+npx ts-node xrpl/Wallet/WalletInfo.ts
+WalletInfo.ts: account_info, account_lines 등으로 상태 조회
 
 ---
 
-## 2. 왜 필요한가?
+## ✅ 예상 결과 
+성공 시:
 
-- **개발 초기 세팅**: 테스트 계정 빠르게 준비
-- **자동화**: 반복 테스트에서 계정 생성/펀딩/조회 스크립트 표준화
-- **디버깅**: 실패 원인 분석 시 계정 상태 쉽게 확인
+새 지갑은 주소/시드가 콘솔에 표시
 
----
+Faucet 호출 후 잔액 증가 및 validated 트랜잭션 확인 가능
 
-## 3. 시나리오: `create` → `faucet` → `walletinfo`
-* 새로운 지갑 생성 -> 지갑 활성화 -> 지갑정보 조회
-### Step 1. 새 지갑 생성 (`createNewWallet.ts`)
+WalletInfo는 XRP 잔액/시퀀스/Flags/TrustLines 등을 출력
 
-- **주체**: 개발자
-- **행동**: 새 시드/주소 생성
-- **내용**: 콘솔에 `address/seed` 출력
+실패 시:
 
-```tsx
-const newWallet = Wallet.generate()
-```
+Faucet 제한/네트워크 지연 → 잠시 후 재시도
+
+.env 누락(로드 스크립트 사용 시) → 필요 변수 확인
+
+노드 연결 실패 → Devnet WS URL 확인
 
 ---
-
-### Step 2. Devnet 펀딩 (`faucet.ts`)
-
-- **주체**: 개발자
-- **행동**: Devnet Faucet으로 해당 시드 지갑 활성화
-- **내용**: 리저브/수수료 지불 가능한 최소 잔액 확보
-
-```tsx
-const fundedWallet = await client.fundWallet(newWallet)
-```
-
----
-
-### Step 3. 지갑 정보 조회 (`WalletInfo.ts`)
-
-- **주체**: 누구나
-- **행동**: `account_info`, `account_lines` 등으로 상태 조회
-- **내용**: XRP 잔액, Sequence, Flags, TrustLines, RegularKey 등
-
-```tsx
- // XRP 잔액 조회
-    const adminBalance = await client.getXrpBalance(adminWallet.address)
-    const userBalance = await client.getXrpBalance(userWallet.address)
-    // 계정 정보 조회
-    const adminAccountInfo = await client.request({
-      command: 'account_info',
-      account: adminWallet.address
-    })
-    const userAccountInfo = await client.request({
-      command: 'account_info',
-      account: userWallet.address
-    })
-    // TrustLine 조회
-    const adminTrustLines = await client.request({
-      command: 'account_lines',
-      account: adminWallet.address
-    })
-    const userTrustLines = await client.request({
-      command: 'account_lines',
-      account: userWallet.address
-    })
-```
-
+🔍 추가 참고
+전체 코드/상세 로그/필드 해석: Notion “Wallet” 문서 참고https://catalyze-research.notion.site/Wallet-241898c680bf80ee8865f907a8f6955e?source=copy_link
