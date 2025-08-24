@@ -4,7 +4,7 @@ import { Client, Wallet } from "xrpl"
 
 dotenv.config({ path: path.join(__dirname, "..", ".env") })
 
-export async function faucet() {
+export async function faucetAll() {
   const client = new Client("wss://s.devnet.rippletest.net:51233")
   await client.connect()
 
@@ -45,5 +45,5 @@ export async function faucet() {
 }
 
 if (require.main === module) {
-  faucet()
+  faucetAll()
 }
