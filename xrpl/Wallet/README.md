@@ -16,8 +16,8 @@
 
 ---
 
-## 3. 시나리오: `generate` → `faucet` → `get-wallet-info`
-
+## 3. 시나리오: `create` → `faucet` → `walletinfo`
+* 새로운 지갑 생성 -> 지갑 활성화 -> 지갑정보 조회
 ### Step 1. 새 지갑 생성 (`createNewWallet.ts`)
 
 - **주체**: 개발자
@@ -71,3 +71,4 @@ const fundedWallet = await client.fundWallet(newWallet)
       account: userWallet.address
     })
 ```
+
