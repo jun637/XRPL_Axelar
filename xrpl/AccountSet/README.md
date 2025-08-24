@@ -1,58 +1,38 @@
-## 1. AccountSet이란?
-
-**AccountSet**은 계정의 **플래그/설정값**을 변경하는 트랜잭션이다.
-
-예: `RequireAuth`, `DefaultRipple`, `DisallowXRP`, `TickSize` 등.
-
-- 표준 플래그는 **asf 계열**(ex. `asfRequireAuth`) 사용 권장
-- 특정 구현에서는 비트값 직접 지정 가능 (테스트/실험용)
+## AccountSet
+* XRPL 계정의 **플래그/설정값**을 변경하는 트랜잭션입니다.  
+* RequireAuth, DefaultRipple, DisallowXRP, TickSize, Domain, TransferRate 등 계정 정책/운영 관련 옵션을 제어할 수 있습니다.  
 
 ---
 
-## 2. 왜 필요한가?
+## 🎯 시나리오 실행 명령어 및 설명  
 
-- **정책 전환**: RequireAuth(승인형 IOU), DefaultRipple(리플 경로) 등 기능 활성화
-- **보안/운영**: MasterKey 비활성화, Domain 설정, TransferRate 등
-
----
-
-## 3. 시나리오:`AccountSet` → (옵션) `TrustSet` 승인 연계
-
-### Step 1. RequireAuth 활성화 (`AccountSet.ts`)
-
-- **주체**: Admin
-- **행동**: `AccountSet` 트랜잭션 전송
-- **내용**:
-    - `SetFlag`: `asfRequireAuth` (또는 프로젝트에서 쓰는 비트값)
-
-```tsx
-const tx = {
-  TransactionType: "AccountSet",
-  Account: admin.address,
-  SetFlag: 2 // 예시: asfRequireAuth (xrpl.js 상수 사용 가능: AccountSetAsfFlags.asfRequireAuth)
-}
+### 1. RequireAuth 활성화
+```bash
+npx ts-node xrpl/AccountSet/AccountSet.ts
 ```
+* Admin 계정이 AccountSet 트랜잭션을 전송하여 RequireAuth 플래그를 활성화 (`SetFlag: asfRequireAuth`)  
+---
+### 2. (옵션) RequireAuth 환경에서 TrustSet 승인
+```bash
+npx ts-node xrpl/TrustSet/authorizeTrustLine.ts
+```
+* RequireAuth 설정된 Admin이 User의 IOU 신뢰선을 승인 → User가 해당 IOU를 정상 수취 가능  
 
 ---
 
-### Step 2. (옵션) RequireAuth 환경에서 TrustSet 승인
+## ✅ 예상 결과
+성공 시:
+* Admin 계정에 RequireAuth 플래그가 반영됨  
+* User가 TrustSet을 보낸 경우, Admin 승인 후 IOU 수취 가능  
+* Explorer에서 TransactionResult: `tesSUCCESS` 확인 가능  
 
-- **주체**: Admin
-- **행동**: 특정 User의 IOU 신뢰선 승인(User가 TrustSet을 Admin에게 이미 보낸 상태)
-- **내용**: 이후 User가 해당 IOU 수취 가능
+실패 시:
+* 플래그 값 오류/중복 → `temMALFORMED`  
+* .env 누락 → Admin/User 시드 확인 필요  
+* 노드 연결 실패 → Devnet WS URL 확인  
 
-```tsx
-const tx = {
-  TransactionType: "TrustSet",
-  Account: admin.address,
-  LimitAmount: {
-    currency: "USD",
-    issuer: user.address,// 승인 시에는 user 주소
-    value: "0"
-  }
-  // Flags / Memo로 승인 의사 표시 (레포 규약에 맞춤)
-}
+---
 
-```
+## 🔍 추가 참고
+전체 코드 / 상세 실행 로그 / 필드 해석은 Notion 문서 참고 → [AccountSet](https://catalyze-research.notion.site/AccountSet-241898c680bf80f28deec45dbe9f29ca?source=copy_link)
 
-- 만약 XRPL의 네이티브 토큰인 XRP를 주고받거나, 발행하는 토큰에 대한 부가 설정 및 통제가 굳이 필요하지 않다면, 이 과정 없이 2번의 일반적인 `TrustSet` 트랜잭션만 전송해도 괜찮음
