@@ -29,7 +29,7 @@ npx ts-node xrpl/Wallet/createNewWallet.ts
 # 3) faucet으로 자산 활성화
 npx ts-node xrpl/Wallet/faucet.ts
 
-# 4) 간단 실행 예시
+# 4) 지갑 정보 조
 npx ts-node xrpl/Wallet/WalletInfo.ts
 ```
 ⚡ 전체 코드 및 상세 실행 로그는 폴더별 README 또는 Notion 문서에서 확인하세요.
@@ -38,19 +38,7 @@ npx ts-node xrpl/Wallet/WalletInfo.ts
 
 ## 🗂️ 전체 디렉토리 구조
 
-```bash
-xrpl/
-├── Wallet/             # 지갑 생성/조회
-├── Payment/            # XRP/IOU 전송
-├── TrustSet/           # 신뢰선 설정
-├── AccountSet/         # 계정 옵션 설정
-├── Credential/         # Credential 발급/검증
-├── PermissionedDEX/    # 권한 기반 DEX
-├── PermissionedDomains/# Domain 기반 권한 관리
-├── TokenEscrow/        # 에스크로
-├── MPTokensV1/         # Multi-Party Tokens (v1)
-├── Batch/              # 배치 트랜잭션
-├── Server/             # 서버 정보 확인
+```bash xrpl/ ├── Wallet/ │ ├── createNewWallet.ts │ ├── faucet.ts │ ├── LoadWallet.ts │ └── WalletInfo.ts │ ├── Payment/ │ ├── sendIOU.ts │ └── sendXRP.ts │ ├── TrustSet/ ├ ├── requireAuth.ts │ └── TrustSet.ts │ ├── AccountSet/ │ └── AccountSet.ts │ ├── Credential/ │ ├── acceptCredential.ts │ ├── checkCredential.ts │ ├── createCredential.ts │ └── deleteCredential.ts │ ├── PermissionedDEX/ │ ├── bookOffers.ts │ ├── cancelOffer.ts │ └── createPermissionedOffer.ts │ ├── PermissionedDomains/ │ ├── AcceptedCredentials.ts │ ├── createDomain.ts │ └── deleteDomain.ts │ ├── TokenEscrow/ │ ├── escrowCancel.ts │ ~~├── escrowCreateIOU.ts~~ │ ├── escrowCreateMPT.ts │ └── escrowFinish.ts │ ├── MPTokensV1/ │ ├── authorizeHolder.ts │ ├── createIssuance.ts │ ├── destroyIssuance.ts │ ├── sendMPT.ts │ └── setIssuance.ts │ ├── Batch/ │ ├── AllOrNothing.ts │ ├── Independent.ts │ ├── OnlyOne.ts │ └── UntilFailure.ts │ ├── Server/ │ └── serverInfo.ts │
 ```
 ---
 ## 📂 폴더별 README 바로가기
