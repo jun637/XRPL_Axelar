@@ -1,136 +1,54 @@
-## 1. Credential이란?
+## Credential
+* XRPL 원장에 기록되는 **신원·권한 증명 레코드**입니다.  
+* 발급자(issuer)가 피발급자(subject)에게 Credential을 발급하면, 도메인 정책(`AcceptedCredentials`)과 연동되어 **접근 제어**에 활용됩니다.  
 
-**Credential**은 XRPL 원장에 저장되는 **“발급자 → 피발급자” 신원·권한 증명 레코드**다.
-
-타입, 만료, 참조 URI 같은 **메타데이터**를 포함한다.
-
-- **발급(Create)**: 발급자(issuer) 지갑이 수행
-- **수락(Accept)**: 피발급자(subject) 지갑이 수행
-- **도메인 정책 연계**: 도메인의 `AcceptedCredentials`와 결합해 **접근 제어**에 사용
-- 주요 필드 예
-    - `Subject`: 피발급자 주소
-    - `CredentialType`: 예 `"KYC"` → **hex 인코딩 문자열**
-    - `Expiration`: 만료 시각(리플 에폭 기준 초)
-    - `URI`: 참조 리소스의 **hex 인코딩 URL**
-
-> 헬퍼: toHex("KYC"), toHex("https://...") 같은 간단한 hex 인코더를 스크립트에 포함해 쓰면 편함.
-> 
+- 주요 필드: `Subject`, `CredentialType(hex)`, `Expiration`, `URI(hex)`  
+- 발급(Create) → 수락(Accept) → 조회(Check) → 삭제(Delete) 순서로 관리  
 
 ---
 
-## 2. 왜 필요한가?
+## 🎯 시나리오 실행 명령어 및 설명  
 
-- **규제 준수**: KYC/AML 충족 계정만 서비스·거래 접근 허용
-- **접근 통제**: 특정 Credential 보유자만 도메인/오더북/기능 참여
-- **정책 분리**: 자산·오퍼에 직접 제약을 박지 않고 **도메인 정책**에서 일괄 관리
-- **유연성/상호운용**: 타입/만료/URI를 조합해 다양한 접근 모델 구성
-
----
-
-## 3. 시나리오: `create` → `accept` → `check` → `delete`
-
-### Step 1. Credential 발급 (Create)
-
-- **주체**: 발급자(관리자)
-- **행동**: `CredentialCreate` 트랜잭션 전송
-- **내용**:
-    - `Subject`: 피발급자 주소
-    - `CredentialType`: 예 `hex("KYC")`
-    - `Expiration`: 예 `now + 3600`
-    - `URI`: 참조 링크의 hex
-
-```tsx
-function toHex(s: string) { return Buffer.from(s, "utf8").toString("hex").toUpperCase() }
-const now = () => Math.floor(Date.now()/1000)
-
-const tx = {
-  TransactionType: "CredentialCreate",
-  Account: issuer.address,                  // 발급자(서명자)
-  Subject: subject.address,                 // 피발급자
-  CredentialType: toHex("KYC"),             // "KYC" → hex
-  Expiration: now() + 3600,                 // 1시간 후 만료
-  URI: toHex("https://example.com/credentials/kyc/user")
-}
-
-
+### 1. Credential 발급
+```bash
+npx ts-node xrpl/Credential/createCredential.ts
 ```
+* Admin(발급자)이 Subject 계정에 Credential 발급 (`CredentialType`, `Expiration`, `URI` 지정)  
 
-- 만료가 지나면 도메인 정책에서 해당 Credential을 부적격으로 간주할 수 있음.
+### 2. Credential 수락
+```bash
+npx ts-node xrpl/Credential/acceptCredential.ts
+```
+* Subject(피발급자)가 발급된 Credential을 수락하여 유효 상태로 전환  
+
+### 3. Credential 조회
+```bash
+npx ts-node xrpl/Credential/checkCredential.ts
+```
+* Subject 계정의 `account_objects`를 조회하여 보유 중인 Credential 확인  
+
+### 4. Credential 삭제
+```bash
+npx ts-node xrpl/Credential/deleteCredential.ts
+```
+* Subject 계정이 본인 Credential 삭제 → 도메인 정책 접근 권한 제거될 수 있음  
 
 ---
 
-### Step 2. Credential 수락 (Accept)
+## ✅ 예상 결과
+성공 시:
+* createCredential 실행 → Subject 계정에 Credential 생성됨  
+* acceptCredential 실행 → Credential 상태가 “수락됨”으로 변경  
+* checkCredential 실행 → 유효 Credential(발급자, 타입, 만료 등) 목록 출력  
+* deleteCredential 실행 → 해당 Credential 삭제, Explorer에서 `tesSUCCESS` 확인 가능  
 
-- **주체**: 피발급자(사용자)
-- **행동**: `CredentialAccept` 트랜잭션 전송
-- **내용**:
-    - `Account`: 피발급자(서명자)
-    - `Issuer`: 발급자 주소
-    - `CredentialType`: Create 단계와 동일한 **hex 타입**
-
-```tsx
-function toHex(s: string) { return Buffer.from(s, "utf8").toString("hex").toUpperCase() }
-
-const tx = {
-  TransactionType: "CredentialAccept",
-  Account: subject.address,                 // 피발급자(서명자)
-  Issuer: issuer.address,                   // 발급자
-  CredentialType: toHex("KYC")
-}
-
-
-```
-
-- 일부 도메인은 수락(accept) 된 Credential만 유효로 인정할 수 있음.
+실패 시:
+* hex 인코딩 값 불일치 → 트랜잭션 거부  
+* 만료된 Credential 사용 → 도메인 접근 제한  
+* .env 누락 또는 노드 연결 실패 → 실행 불가  
 
 ---
 
-### Step 3. Credential 조회 (Check)
-
-- **주체**: 누구나(공개 원장 조회)
-- **행동**: `account_objects` RPC → `LedgerEntryType === "Credential"` 필터
-
-```tsx
- const r = await client.request({
-  command: "account_objects",
-  account: subject.address,
-  limit: 400
-})
-const creds = (r.result.account_objects || []).filter(
-  (o: any) => o.LedgerEntryType === "Credential"
-)
-
-
-```
-
-- Issuer, CredentialType, Expiration 등을 기준으로 유효 Credential만 골라서 표시.
-
----
-
-### Step 4. Credential 삭제 (Delete)
-
-- **주체**: 피발급자(본인)
-- **행동**: `CredentialDelete` 트랜잭션 전송
-- **내용**:
-    - `Account`: 피발급자(서명자)
-    - `Issuer`: 발급자 주소
-    - `Subject`: 피발급자 주소
-    - `CredentialType`: 삭제할 타입(hex)
-
-```tsx
- 
-function toHex(s: string) { return Buffer.from(s, "utf8").toString("hex").toUpperCase() }
-
-const tx = {
-  TransactionType: "CredentialDelete",
-  Account: subject.address,                 // 피발급자(서명자)
-  Issuer: issuer.address,                   // 발급자
-  Subject: subject.address,                 // 피발급자
-  CredentialType: toHex("KYC")
-}
-
-
-```
-
-- 도메인 정책이 “보유 중” Credential을 요구하는 경우, 삭제 후엔 접근이 제한될 수 있음.
+## 🔍 추가 참고
+전체 코드 / 상세 실행 로그 / 필드 해석은 Notion 문서 참고 → [Credential](https://catalyze-research.notion.site/Credential-241898c680bf802eadd0dcf5bdfc0ded?source=copy_link)
 
