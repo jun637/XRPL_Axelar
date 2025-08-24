@@ -10,13 +10,13 @@
 
 ## 🎯 시나리오 실행 명령어 및 설명  
 
-## 1. User 신뢰선 생성
+### 1. User 신뢰선 생성
 ```bash
 npx ts-node xrpl/TrustSet/TrustSet.ts
 ```
 * User 계정이 특정 통화(IOU)를 수신하기 위해 신뢰선(limit)을 생성 (LimitAmount 지정)
 
-2. 발행자 승인 (RequireAuth 켜진 경우)
+### 2. 발행자 승인 (RequireAuth 켜진 경우)
 ```bash
 npx ts-node xrpl/TrustSet/authorizeTrustLine.ts
 ```
@@ -44,4 +44,5 @@ npx ts-node xrpl/TrustSet/authorizeTrustLine.ts
 
 ## 🔍 추가 참고
 전체 코드 / 상세 실행 로그 / 필드 해석은 Notion 문서 참고 → [TrustSet](https://catalyze-research.notion.site/TrustSet-241898c680bf8004a0efe89986fb6060?source=copy_link)
+
 
