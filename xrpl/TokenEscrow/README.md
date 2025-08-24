@@ -9,7 +9,8 @@
 
 ### 1. 에스크로 생성
 ```bash
-    npx ts-node xrpl/TokenEscrow/escrowCreate.ts
+    npx ts-node xrpl/TokenEscrow/escrowCreateMPT.ts
+    npx ts-node xrpl/TokenEscrow/escrowCreateIOU.ts
 ```
 * User가 특정 IOU/MPT를 Escrow에 잠그는 트랜잭션 실행 (FinishAfter / CancelAfter 조건 포함)  
 
@@ -44,4 +45,5 @@
 
 ## 🔍 추가 참고
 전체 코드 / 상세 실행 로그 / 필드 해석은 Notion 문서 참고 → [TokenEscrow](https://catalyze-research.notion.site/TokenEscrow-241898c680bf80deb2a7db0f1c960696?source=copy_link)
+
 
