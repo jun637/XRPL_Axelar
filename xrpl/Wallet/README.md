@@ -38,4 +38,7 @@ Faucet 제한/네트워크 지연 → 잠시 후 재시도
 
 ---
 🔍 추가 참고
-전체 코드/상세 로그/필드 해석: Notion “Wallet” 문서 참고https://catalyze-research.notion.site/Wallet-241898c680bf80ee8865f907a8f6955e?source=copy_link
+전체 코드/상세 로그/필드 해석: Notion [Wallet](https://catalyze-research.notion.site/Wallet-241898c680bf80ee8865f907a8f6955e?source=copy_link)
+참고
+
+
