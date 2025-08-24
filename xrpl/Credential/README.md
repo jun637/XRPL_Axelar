@@ -14,19 +14,19 @@
 npx ts-node xrpl/Credential/createCredential.ts
 ```
 * Admin(발급자)이 Subject 계정에 Credential 발급 (`CredentialType`, `Expiration`, `URI` 지정)  
-
+---
 ### 2. Credential 수락
 ```bash
 npx ts-node xrpl/Credential/acceptCredential.ts
 ```
 * Subject(피발급자)가 발급된 Credential을 수락하여 유효 상태로 전환  
-
+---
 ### 3. Credential 조회
 ```bash
 npx ts-node xrpl/Credential/checkCredential.ts
 ```
 * Subject 계정의 `account_objects`를 조회하여 보유 중인 Credential 확인  
-
+---
 ### 4. Credential 삭제
 ```bash
 npx ts-node xrpl/Credential/deleteCredential.ts
@@ -51,4 +51,5 @@ npx ts-node xrpl/Credential/deleteCredential.ts
 
 ## 🔍 추가 참고
 전체 코드 / 상세 실행 로그 / 필드 해석은 Notion 문서 참고 → [Credential](https://catalyze-research.notion.site/Credential-241898c680bf802eadd0dcf5bdfc0ded?source=copy_link)
+
 
