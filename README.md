@@ -115,7 +115,9 @@ xrpl/
 
 ---
 ## XRPL Devnet Explorer
+
 👉 https://devnet.xrpl.org/
+
 ---
 ## 🌐 네트워크 / 버전
  
