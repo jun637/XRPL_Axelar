@@ -7,7 +7,7 @@
 ## 📑 목차
 
 - [🚀 Quickstart](./README.md#-quickstart)
-- [🗂️ 전체 디렉토리 구조](./README.md#-전체-디렉토리-구조)
+- [🗂️ 전체 디렉토리 구조](#전체-디렉토리-구조)
 - [📂 폴더별 README 바로가기](./README.md#-폴더별-readme-바로가기)
 - [XRPL Devnet Explorer](./README.md#xrpl-devnet-explorer)
 - [🌐 네트워크 / 버전](./README.md#-네트워크--버전)
@@ -41,59 +41,59 @@ npx ts-node xrpl/Wallet/WalletInfo.ts
 
 ```bash
 xrpl/
-├── Wallet/
+├── Wallet/ # 지갑 생성/관리
 │ ├── createNewWallet.ts
 │ ├── faucet.ts
 │ ├── LoadWallet.ts
 │ └── WalletInfo.ts
 │
-├── Payment/
+├── Payment/ # XRP/IOU 송금
 │ ├── sendIOU.ts
 │ └── sendXRP.ts
 │
-├── TrustSet/
+├── TrustSet/ # 신뢰선 설정
 ├ ├── requireAuth.ts
 │ └── TrustSet.ts
 │
-├── AccountSet/
+├── AccountSet/ # 계정 옵션 설정
 │ └── AccountSet.ts
 │
-├── Credential/
+├── Credential/ # Credential 발급/검증
 │ ├── acceptCredential.ts
 │ ├── checkCredential.ts
 │ ├── createCredential.ts
 │ └── deleteCredential.ts
 │
-├── PermissionedDEX/
+├── PermissionedDEX/ # 권한 기반 DEX
 │ ├── bookOffers.ts
 │ ├── cancelOffer.ts
 │ └── createPermissionedOffer.ts
 │
-├── PermissionedDomains/
+├── PermissionedDomains/# Domain 기반 권한 관리
 │ ├── AcceptedCredentials.ts
 │ ├── createDomain.ts
 │ └── deleteDomain.ts
 │
-├── TokenEscrow/
+├── TokenEscrow/ # 에스크로
 │ ├── escrowCancel.ts
 │ ~~├── escrowCreateIOU.ts~~
 │ ├── escrowCreateMPT.ts
 │ └── escrowFinish.ts
 │
-├── MPTokensV1/
+├── MPTokensV1/ # Multi-Party Tokens (v1)
 │ ├── authorizeHolder.ts
 │ ├── createIssuance.ts
 │ ├── destroyIssuance.ts
 │ ├── sendMPT.ts
 │ └── setIssuance.ts
 │
-├── Batch/
+├── Batch/ # 배치 트랜잭션
 │ ├── AllOrNothing.ts
 │ ├── Independent.ts
 │ ├── OnlyOne.ts
 │ └── UntilFailure.ts
 │
-├── Server/
+├── Server/ # 서버 정보 확인
 │ └── serverInfo.ts
 │
 ```
