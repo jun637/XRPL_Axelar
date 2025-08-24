@@ -32,9 +32,11 @@ npx ts-node xrpl/Wallet/faucet.ts
 # 4) 간단 실행 예시
 npx ts-node xrpl/Wallet/WalletInfo.ts
 ⚡ 전체 코드 및 상세 실행 로그는 폴더별 README 또는 Notion 문서에서 확인하세요.
+
 ---
 
-🗂️ 전체 디렉토리 구조
+## 🗂️ 전체 디렉토리 구조
+
 bash
 xrpl/
 ├── Wallet/             # 지갑 생성/조회
