@@ -14,13 +14,13 @@
 ```bash
 npx ts-node xrpl/TrustSet/TrustSet.ts
 ```
-User 계정이 특정 통화(IOU)를 수신하기 위해 신뢰선(limit)을 생성 (LimitAmount 지정)
+* User 계정이 특정 통화(IOU)를 수신하기 위해 신뢰선(limit)을 생성 (LimitAmount 지정)
 
 2. 발행자 승인 (RequireAuth 켜진 경우)
 ```bash
 npx ts-node xrpl/TrustSet/authorizeTrustLine.ts
 ```
-Admin 계정이 RequireAuth 플래그가 켜진 상태에서 User 신뢰선을 승인 (tfSetAuth 플래그 사용)
+* Admin 계정이 RequireAuth 플래그가 켜진 상태에서 User 신뢰선을 승인 (tfSetAuth 플래그 사용)
 
 ---
 ## ✅ 예상 결과
@@ -44,3 +44,4 @@ Admin 계정이 RequireAuth 플래그가 켜진 상태에서 User 신뢰선을 �
 
 ## 🔍 추가 참고
 전체 코드 / 상세 실행 로그 / 필드 해석은 Notion 문서 참고 → [TrustSet](https://catalyze-research.notion.site/TrustSet-241898c680bf8004a0efe89986fb6060?source=copy_link)
+
