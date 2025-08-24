@@ -32,6 +32,7 @@ npx ts-node xrpl/Wallet/faucet.ts
 # 4) 간단 실행 예시
 npx ts-node xrpl/Wallet/WalletInfo.ts
 ⚡ 전체 코드 및 상세 실행 로그는 폴더별 README 또는 Notion 문서에서 확인하세요.
+---
 
 🗂️ 전체 디렉토리 구조
 bash
@@ -47,6 +48,8 @@ xrpl/
 ├── MPTokensV1/         # Multi-Party Tokens (v1)
 ├── Batch/              # 배치 트랜잭션
 ├── Server/             # 서버 정보 확인
+
+---
 📂 폴더별 README 바로가기
 Wallet
 
@@ -69,10 +72,10 @@ MPTokensV1
 Batch
 
 Server
-
+---
 XRPL Devnet Explorer
 👉 https://devnet.xrpl.org/
-
+---
 🌐 네트워크 / 버전
 항목	값
 네트워크	XRPL Devnet (wss://s.devnet.rippletest.net:51233)
