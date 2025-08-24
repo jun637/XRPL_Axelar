@@ -1,117 +1,49 @@
-### 1. Permissioned Domain이란?
+## PermissionedDomains
 
-Permissioned Domain은 **접근 정책(Access Policy)을 온체인에 등록**하는 기능이다.
+* Permissioned Domain은 **온체인 접근 정책(Access Policy)** 을 등록하는 기능입니다.  
+* 자체로는 아무 동작을 하지 않지만, DEX·Lending Vault 등 다른 리소스에 **도메인 ID를 연결**하면 해당 리소스가 이 도메인의 규칙을 따라 접근을 허용하거나 거부합니다.  
 
-스스로는 아무 행동도 하지 않지만, 다른 리소스(예: Permissioned DEX, Lending Vault 등)에 **도메인 ID를 연결**하면
-
-해당 리소스가 이 도메인의 규칙을 따라 트랜잭션을 허용하거나 거부할 수 있다.
-
-- **도메인의 규칙** = `AcceptedCredentials`
-    
-    1~10개의 “허용 자격”을 나열한다.
-    
-    각 자격은 `발급자(Issuer)`와 `CredentialType(hex)`의 조합이다.
-    
-- **접근 허용 조건**
-    
-    트랜잭션을 보내는 계정이 이 도메인에서 허용한 Credential을 **최소 1개** 이상 가지고 있어야 한다.
-    
-    해당 Credential은 **수락됨(accepted) 상태**이며 **만료되지 않아야** 한다.
-    
+- 규칙은 `AcceptedCredentials` 배열에 정의되며, 1~10개의 Credential(Issuer + CredentialType) 조합을 나열  
+- 트랜잭션 발신자가 허용된 Credential을 보유(accepted 상태, 미만료)해야 접근 가능  
 
 ---
 
-### 2. 왜 필요한가?
+## 🎯 시나리오 실행 명령어 및 설명  
 
-- **규제 준수**
-    
-    금융 서비스, KYC/AML 요구사항이 있는 프로젝트에서 필수.
-    
-- **정책 분리**
-    
-    정책 변경 시, 리소스 코드나 주소를 수정할 필요 없이 도메인 규칙만 업데이트하면 된다.
-    
-- **운영 유연성**
-    
-    발급/수락/만료를 통해 **실시간으로 접근자 목록이 변동**될 수 있다.
-    
-- **소유권 명확**
-    
-    도메인을 만든 계정(오너)만 규칙 변경·삭제 가능.
-    
-
----
-
-### 3. 시나리오: `createDomain` → `deleteDomain`
-
-시나리오에서는 **도메인 생성과 삭제**만 다룬다.
-
-Credential 발급/수락 시나리오와 조합하면, 도메인의 실제 접근제한 효과까지 확인할 수 있다.
-
-### Step 1. 도메인 생성
-
-- **주체**: ADMIN(도메인 오너)
-- **행동**: `PermissionedDomainSet` 트랜잭션 전송
-- **내용**:
-    - `AcceptedCredentials`: `{Issuer: ADMIN, CredentialType: "KYC(hex)"}`
-        
-        → ADMIN이 발급한 KYC Credential을 가진 계정만 이 도메인에 접근 가능
-        
-
-```tsx
-const tx: Transaction = {
-   TransactionType: "PermissionedDomainSet",
-   Account: admin.address,
-   // 새로운 Domain 생성 시에는 DomainID 생략
-   AcceptedCredentials: [
-     {
-       Credential: {
-         Issuer: admin.address,
-         CredentialType: toHex("KYC"),
-       }
-     }
-   ]
- }
-```
-
-- 
-
+### 1. 도메인 생성
 ```bash
-DomainID(created): 2A65BCCE9715703A09460B44812BB65D41B9406A42D0CC66979E385C5788####
-
+    npx ts-node xrpl/PermissionedDomains/createDomain.ts
 ```
+* Admin 계정이 새로운 Permissioned Domain을 생성하고, 허용할 Credential(Issuer, CredentialType)을 등록  
 
-- **DomainID** : Permissioned Domain을 고유하게 식별하는 32바이트(256비트) 해시 값으로, 64자리 hex 문자열로 표시됨
-- 콘솔에 생성된 도메인 ID 따로 복사해 도메인 삭제에 사용
+### 2. 도메인 삭제
+```bash
+    npx ts-node xrpl/PermissionedDomains/deleteDomain.ts  
+```
+* 기존 DomainID를 지정하여 Permissioned Domain을 삭제  
+
+### (옵션) 3. 도메인 조회
+```bash
+  npx ts-node xrpl/PermissionedDomains/AcceptedCredentials.ts  
+```
+* 특정 DomainID에 설정된 AcceptedCredentials 정보를 조회하여 콘솔에 출력  
 
 ---
 
-### Step 2. 도메인 삭제
+## ✅ 예상 결과
+성공 시:
 
-- **주체**: ADMIN
-- **행동**: `PermissionedDomainDelete` 트랜잭션 전송
-- **내용**: `DomainID` 지정 → 해당 도메인의 정책 자체가 사라짐
+* `createDomain.ts` 실행 → Explorer에서 `tesSUCCESS` 확인 및 콘솔에 `DomainID`(64자리 hex) 출력  
+* `deleteDomain.ts` 실행 → 해당 DomainID가 원장에서 제거됨  
+* (옵션) AcceptedCredentials 조회 → Domain에 등록된 허용 Credential 목록 확인 가능  
 
-```tsx
-//  createDomain 실행 로그에서 복붙한 DomainID
-const DOMAIN_ID = "2A65BCCE9715703A09460B44812BB65D41B9406A42D0CC66979E385C5788####"
+실패 시:
 
-const tx: Transaction = {
-    TransactionType: "PermissionedDomainDelete",
-    Account: admin.address,
-    DomainID: DOMAIN_ID
-}
-```
+* 잘못된 DomainID → ledger_entry 조회/삭제 실패  
+* .env 누락 → Admin 시드 불러오기 실패  
+* 네트워크 연결 오류 → Devnet WS URL 확인 필요  
 
 ---
 
-### (옵션)Step 3. 특정 도메인의 Accepted Credentials 정보 조회
-
-```tsx
-//  createDomain 실행 로그에서 복붙한 DomainID
-const DOMAIN_ID = "2A65BCCE9715703A09460B44812BB65D41B9406A42D0CC66979E385C5788####"
-const r = await client.request({ command: "ledger_entry", index: DOMAIN_ID })
-console.log(JSON.stringify(r, null, 2))
-```
-
-- 해당 도메인의 AcceptedCredentials 정보를 콘솔에 출력
+## 🔍 추가 참고
+전체 코드 / 상세 실행 로그 / 필드 해석은 Notion 문서 참고 → [PermissionedDomains](https://catalyze-research.notion.site/PermissionedDomains-241898c680bf8003a61aee9d1f87244c?source=copy_link)
