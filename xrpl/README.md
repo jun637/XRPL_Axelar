@@ -29,7 +29,7 @@ npx ts-node xrpl/Wallet/createNewWallet.ts
 # 3) faucet으로 자산 활성화
 npx ts-node xrpl/Wallet/faucet.ts
 
-# 4) 지갑 정보 조
+# 4) 지갑 정보 조회
 npx ts-node xrpl/Wallet/WalletInfo.ts
 ```
 ⚡ 전체 코드 및 상세 실행 로그는 폴더별 README 또는 Notion 문서에서 확인하세요.
@@ -38,7 +38,63 @@ npx ts-node xrpl/Wallet/WalletInfo.ts
 
 ## 🗂️ 전체 디렉토리 구조
 
-```bash xrpl/ ├── Wallet/ │ ├── createNewWallet.ts │ ├── faucet.ts │ ├── LoadWallet.ts │ └── WalletInfo.ts │ ├── Payment/ │ ├── sendIOU.ts │ └── sendXRP.ts │ ├── TrustSet/ ├ ├── requireAuth.ts │ └── TrustSet.ts │ ├── AccountSet/ │ └── AccountSet.ts │ ├── Credential/ │ ├── acceptCredential.ts │ ├── checkCredential.ts │ ├── createCredential.ts │ └── deleteCredential.ts │ ├── PermissionedDEX/ │ ├── bookOffers.ts │ ├── cancelOffer.ts │ └── createPermissionedOffer.ts │ ├── PermissionedDomains/ │ ├── AcceptedCredentials.ts │ ├── createDomain.ts │ └── deleteDomain.ts │ ├── TokenEscrow/ │ ├── escrowCancel.ts │ ~~├── escrowCreateIOU.ts~~ │ ├── escrowCreateMPT.ts │ └── escrowFinish.ts │ ├── MPTokensV1/ │ ├── authorizeHolder.ts │ ├── createIssuance.ts │ ├── destroyIssuance.ts │ ├── sendMPT.ts │ └── setIssuance.ts │ ├── Batch/ │ ├── AllOrNothing.ts │ ├── Independent.ts │ ├── OnlyOne.ts │ └── UntilFailure.ts │ ├── Server/ │ └── serverInfo.ts │
+```bash
+xrpl/
+├── Wallet/
+│ ├── createNewWallet.ts
+│ ├── faucet.ts
+│ ├── LoadWallet.ts
+│ └── WalletInfo.ts
+│
+├── Payment/
+│ ├── sendIOU.ts
+│ └── sendXRP.ts
+│
+├── TrustSet/
+├ ├── requireAuth.ts
+│ └── TrustSet.ts
+│
+├── AccountSet/
+│ └── AccountSet.ts
+│
+├── Credential/
+│ ├── acceptCredential.ts
+│ ├── checkCredential.ts
+│ ├── createCredential.ts
+│ └── deleteCredential.ts
+│
+├── PermissionedDEX/
+│ ├── bookOffers.ts
+│ ├── cancelOffer.ts
+│ └── createPermissionedOffer.ts
+│
+├── PermissionedDomains/
+│ ├── AcceptedCredentials.ts
+│ ├── createDomain.ts
+│ └── deleteDomain.ts
+│
+├── TokenEscrow/
+│ ├── escrowCancel.ts
+│ ~~├── escrowCreateIOU.ts~~
+│ ├── escrowCreateMPT.ts
+│ └── escrowFinish.ts
+│
+├── MPTokensV1/
+│ ├── authorizeHolder.ts
+│ ├── createIssuance.ts
+│ ├── destroyIssuance.ts
+│ ├── sendMPT.ts
+│ └── setIssuance.ts
+│
+├── Batch/
+│ ├── AllOrNothing.ts
+│ ├── Independent.ts
+│ ├── OnlyOne.ts
+│ └── UntilFailure.ts
+│
+├── Server/
+│ └── serverInfo.ts
+│
 ```
 ---
 ## 📂 폴더별 README 바로가기
