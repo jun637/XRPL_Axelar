@@ -265,6 +265,7 @@ xrpl/
 트랜잭션 서명/제출 계정 주소로 검색
 https://devnet.xrpl.org/
 ```bash
+#실행 로그 일부
  "TransactionIndex": 0,
     "TransactionResult":"tesSUCCESS" # 트랜잭션 실행 결과 코드 (tesSUCCESS = 정상 처리 완료)
     },
