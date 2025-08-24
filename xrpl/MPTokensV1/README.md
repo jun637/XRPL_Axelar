@@ -13,26 +13,26 @@ npx ts-node xrpl/MPTokensV1/createIssuance.ts
 ```
 * Admin 계정이 `MPTokenIssuanceCreate` 트랜잭션으로 새로운 발행본 정의를 생성  
 * AssetScale, MaximumAmount, Flags(tfMPTCanTransfer, tfMPTRequireAuth 등) 지정 → 로그에서 IssuanceID 복사  
-
+---
 ### 2. 홀더 권한 부여 (RequireAuth 켜진 경우)
 ```bash
 npx ts-node xrpl/MPTokensV1/authorizeHolder.ts
 ```
 * 발행본이 RequireAuth 모드일 때 User는 먼저 Authorize 요청을 보내고, Admin이 승인해야 보유 가능  
-
+---
 ### 3. MPT 결제
 ```bash
 npx ts-node xrpl/MPTokensV1/sendMPT.ts
 ```
 * Admin → User로 MPT 전송 (`Amount: { mpt_issuance_id, value }`)  
 * v1은 직접 결제만 지원  
-
+---
 ### (옵션) 4. 발행본 락/언락
 ```bash
 npx ts-node xrpl/MPTokensV1/setIssuance.ts <lock|unlock> [holderAddress]
 ``` 
 * 발행자가 발행본 전체 또는 특정 홀더만 잠금/해제  
-
+---
 ### (옵션) 5. 발행 정의 삭제
 ```bash
 npx ts-node xrpl/MPTokensV1/destroyIssuance.ts
@@ -58,3 +58,4 @@ npx ts-node xrpl/MPTokensV1/destroyIssuance.ts
 
 ## 🔍 추가 참고
 전체 코드 / 상세 실행 로그 / 필드 해석은 Notion 문서 참고 → [MPTokensV1](https://catalyze-research.notion.site/MPtokensV1-241898c680bf801694fffcf16c9ef20c?source=copy_link)
+
