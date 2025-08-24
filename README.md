@@ -118,8 +118,10 @@ xrpl/
 👉 https://devnet.xrpl.org/
 ---
 ## 🌐 네트워크 / 버전
-항목	값
-네트워크	XRPL Devnet (wss://s.devnet.rippletest.net:51233)
-rippled	v2.5.0
-xrpl.js	package.json 참조
-Node.js	LTS 권장
+ 
+
+|------------|------------------------------------------------|
+| 네트워크   | XRPL Devnet (wss://s.devnet.rippletest.net:51233) |
+| rippled    | v2.5.0 |
+| xrpl.js    | package.json 참조 |
+| Node.js    | LTS 권장 |
