@@ -7,7 +7,7 @@
 ## 📑 목차
 
 - [🚀 Quickstart](./README.md#-quickstart)
-- [🗂️ 전체 디렉토리 구조](#전체-디렉토리-구조)
+- [🗂️ 전체 디렉토리 구조](#-전체-디렉토리-구조)
 - [📂 폴더별 README 바로가기](./README.md#-폴더별-readme-바로가기)
 - [XRPL Devnet Explorer](./README.md#xrpl-devnet-explorer)
 - [🌐 네트워크 / 버전](./README.md#-네트워크--버전)
