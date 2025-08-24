@@ -38,9 +38,10 @@
 
 * IOU/MPT 조건 위반 (CancelAfter 누락, 발행자 플래그 미설정 등) → Invalid Transaction  
 * RequireAuth / Freeze / Lock 정책 위반 시 거부  
-* xrpl.js 기본 서명 사용 시 IOU/MPT Escrow는 Invalid signature → 반드시 raw signing 방식 필요  
+* xrpl.js 기본 서명 사용 시 IOU/MPT Escrow는 Invalid signature → 반드시 raw signing 방식 필요(노션 참고)  
 
 ---
 
 ## 🔍 추가 참고
-전체 코드 / 상세 실행 로그 / 필드 해석은 Notion 문서 참고 → [TokenEscrow](👉 여기에 노션 링크 삽입)
+전체 코드 / 상세 실행 로그 / 필드 해석은 Notion 문서 참고 → [TokenEscrow](https://catalyze-research.notion.site/TokenEscrow-241898c680bf80deb2a7db0f1c960696?source=copy_link)
+
