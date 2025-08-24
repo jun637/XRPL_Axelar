@@ -47,4 +47,5 @@ npx ts-node xrpl/PermissionedDEX/cancelOffer.ts
 ---
 
 ## 🔍 추가 참고
-전체 코드 / 상세 실행 로그 / 필드 해석은 Notion 문서 참고 → [Permissioned DEX](👉 노션 링크 넣기)
+전체 코드 / 상세 실행 로그 / 필드 해석은 Notion 문서 참고 → [Permissioned DEX](https://catalyze-research.notion.site/PermissionedDex-241898c680bf8022a574eba4f4d434a5?source=copy_link)
+
