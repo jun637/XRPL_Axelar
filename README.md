@@ -262,9 +262,17 @@ xrpl/
 ---
 
 ### XRPL Devnet Explorer(트랜잭션 확인)
-
+트랜잭션 서명/제출 계정 주소로 검색
 https://devnet.xrpl.org/
-
+```bash
+ "TransactionIndex": 0,
+    "TransactionResult":"tesSUCCESS" # 트랜잭션 실행 결과 코드 (tesSUCCESS = 정상 처리 완료)
+    },
+    "tx_json": {                    # 실제 제출된 트랜잭션 원문(JSON)
+      "Account": "rnD149aGRA''",    # **트랜잭션 서명/제출 계정 주소** 
+      "Fee": "1",                   # 수수료 (drops 단위, 1 drop = 0.000001 XRP)
+      "Flags": 0,
+```
 ---
 
 ## **🌐 네트워크 / 버전**
