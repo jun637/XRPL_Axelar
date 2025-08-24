@@ -32,8 +32,8 @@ npx ts-node xrpl/Wallet/faucet.ts
 # 4) 지갑 정보 조회
 npx ts-node xrpl/Wallet/WalletInfo.ts
 ```
-⚡ 기능별 실행 명령어 및 간단한 시나리오 이해는 폴더별 README,
-⚡ 전체 코드 및 상세 실행 로그를 포함한 스크립트 해석은 Notion 문서에서 확인하세요.
+* 기능별 실행 명령어 및 간단한 시나리오 이해는 폴더별 README에서,
+* 전체 코드 및 상세 실행 로그를 포함한 스크립트 해석은 Notion 문서에서 확인하세요.
 
 ---
 
